@@ -10,4 +10,14 @@
     <url>%2Flinchao1002.github.io%2F2019%2F01%2F18%2Fhello-world%2F</url>
     <content type="text"><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick StartCreate a new post1$ hexo new "My New Post" More info: Writing Run server1$ hexo server More info: Server Generate static files1$ hexo generate More info: Generating Deploy to remote sites1$ hexo deploy More info: Deployment]]></content>
   </entry>
+  <entry>
+    <title></title>
+    <url>%2Flinchao1002.github.io%2Fcategories%2Findex.html</url>
+    <content type="text"><![CDATA[title: categoriesdate: 2019-01-18 20:38:20type: categories—]]></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>%2Flinchao1002.github.io%2Ftags%2Findex.html</url>
+    <content type="text"><![CDATA[title: tagsdate: 2019-01-18 20:37:55type: tags-]]></content>
+  </entry>
 </search>
