@@ -6,7 +6,7 @@
   <link href="/linchao1002.github.io/atom.xml" rel="self"/>
   
   <link href="https//linchao1002.github.io/"/>
-  <updated>2019-01-24T07:27:53.827Z</updated>
+  <updated>2019-01-25T03:53:46.389Z</updated>
   <id>https//linchao1002.github.io/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Next主题个性化之自动更换背景图片</title>
+    <link href="https//linchao1002.github.io/2019/01/25/Next%E4%B8%BB%E9%A2%98%E4%B8%AA%E6%80%A7%E5%8C%96%E4%B9%8B%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%8D%A2%E8%83%8C%E6%99%AF%E5%9B%BE%E7%89%87/"/>
+    <id>https//linchao1002.github.io/2019/01/25/Next主题个性化之自动更换背景图片/</id>
+    <published>2019-01-25T12:14:49.000Z</published>
+    <updated>2019-01-25T03:53:46.389Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="Next主题个性化之自动更换背景图片"><a href="#Next主题个性化之自动更换背景图片" class="headerlink" title="Next主题个性化之自动更换背景图片"></a>Next主题个性化之自动更换背景图片</h2><p>如果觉得next的空白主题看腻了或者太多人用觉得不够个性化，那么不妨试试自动更新背景图片（简单且酷）。</p><p>实现的原理：调用了网站的接口。<br>自动更换背景的实现是修改添加背景的css样式实现。图片来源是 ：<a href="https://source.unsplash.com/" target="_blank" rel="noopener">https://source.unsplash.com/</a></p><p>这个网站，里面不仅免费提供了很多高清美图，而且还提供api接口调用，实在是良心。<br><a id="more"></a></p><h6 id="1-修改背景样式"><a href="#1-修改背景样式" class="headerlink" title="1 .修改背景样式"></a>1 .修改背景样式</h6><p>修改themes\next\source\css\ _custom\custom.styl文件，这个是Next故意留给用户自己个性化定制一些样式的文件，添加以下代码：</p><p>body {<br>    background:url(<a href="https://source.unsplash.com/random/1600x900)" target="_blank" rel="noopener">https://source.unsplash.com/random/1600x900)</a>;<br>    background-repeat: no-repeat;<br>    background-attachment:fixed;<br>    background-position:50% 50%;<br>}<br>如果自己不喜欢这个网址提供的图片做背景，那么修改url()里面的路径即可。repeat、attachment、position就是调整图片的位置，不重复出现、不滚动等等。</p><h6 id="2-修改不透明度"><a href="#2-修改不透明度" class="headerlink" title="2.修改不透明度"></a>2.修改不透明度</h6><p>完成这一步其实背景就会自动更换了，但是会出现一个问题，因为next主题的背景是纯透明的，这样子就造成背景图片的影响看不见文字，这对于博客来说肯定不行。</p><p>那么就需要调整背景的不透明度了。同样是修改themes\next\source\css\ _custom\custom.styl文件。在后面添加如下代码</p><p>.main-inner {<br>    margin-top: 60px;<br>    padding: 60px 60px 60px 60px;<br>    background: #fff;<br>    opacity: 0.8;<br>    min-height: 500px;<br>}<br>background: #fff; 白色   opacity: 0.8;不透明度</p><p>然后 hexo clean  hexo g  hexo d  便可以实现了</p><p>参考链接：<a href="https://blog.csdn.net/mango_haoming/article/details/78473243" target="_blank" rel="noopener">https://blog.csdn.net/mango_haoming/article/details/78473243</a></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;Next主题个性化之自动更换背景图片&quot;&gt;&lt;a href=&quot;#Next主题个性化之自动更换背景图片&quot; class=&quot;headerlink&quot; title=&quot;Next主题个性化之自动更换背景图片&quot;&gt;&lt;/a&gt;Next主题个性化之自动更换背景图片&lt;/h2&gt;&lt;p&gt;如果觉得next的空白主题看腻了或者太多人用觉得不够个性化，那么不妨试试自动更新背景图片（简单且酷）。&lt;/p&gt;
+&lt;p&gt;实现的原理：调用了网站的接口。&lt;br&gt;自动更换背景的实现是修改添加背景的css样式实现。图片来源是 ：&lt;a href=&quot;https://source.unsplash.com/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;https://source.unsplash.com/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;这个网站，里面不仅免费提供了很多高清美图，而且还提供api接口调用，实在是良心。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="Hexo" scheme="https//linchao1002.github.io/categories/Hexo/"/>
+    
+    
+      <category term="Hexo" scheme="https//linchao1002.github.io/tags/Hexo/"/>
+    
+      <category term="Next" scheme="https//linchao1002.github.io/tags/Next/"/>
+    
+  </entry>
   
   <entry>
     <title>Next 主题添加分享功能</title>

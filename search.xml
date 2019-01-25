@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Next主题个性化之自动更换背景图片]]></title>
+    <url>%2Flinchao1002.github.io%2F2019%2F01%2F25%2FNext%E4%B8%BB%E9%A2%98%E4%B8%AA%E6%80%A7%E5%8C%96%E4%B9%8B%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%8D%A2%E8%83%8C%E6%99%AF%E5%9B%BE%E7%89%87%2F</url>
+    <content type="text"><![CDATA[Next主题个性化之自动更换背景图片如果觉得next的空白主题看腻了或者太多人用觉得不够个性化，那么不妨试试自动更新背景图片（简单且酷）。 实现的原理：调用了网站的接口。自动更换背景的实现是修改添加背景的css样式实现。图片来源是 ：https://source.unsplash.com/ 这个网站，里面不仅免费提供了很多高清美图，而且还提供api接口调用，实在是良心。 1 .修改背景样式修改themes\next\source\css\ _custom\custom.styl文件，这个是Next故意留给用户自己个性化定制一些样式的文件，添加以下代码： body { background:url(https://source.unsplash.com/random/1600x900); background-repeat: no-repeat; background-attachment:fixed; background-position:50% 50%;}如果自己不喜欢这个网址提供的图片做背景，那么修改url()里面的路径即可。repeat、attachment、position就是调整图片的位置，不重复出现、不滚动等等。 2.修改不透明度完成这一步其实背景就会自动更换了，但是会出现一个问题，因为next主题的背景是纯透明的，这样子就造成背景图片的影响看不见文字，这对于博客来说肯定不行。 那么就需要调整背景的不透明度了。同样是修改themes\next\source\css\ _custom\custom.styl文件。在后面添加如下代码 .main-inner { margin-top: 60px; padding: 60px 60px 60px 60px; background: #fff; opacity: 0.8; min-height: 500px;}background: #fff; 白色 opacity: 0.8;不透明度 然后 hexo clean hexo g hexo d 便可以实现了 参考链接：https://blog.csdn.net/mango_haoming/article/details/78473243]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+        <tag>Next</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Next 主题添加分享功能]]></title>
     <url>%2Flinchao1002.github.io%2F2019%2F01%2F23%2F2019-1-24%20Next%E4%B8%BB%E9%A2%98%E6%B7%BB%E5%8A%A0%E5%88%86%E4%BA%AB%E5%8A%9F%E8%83%BD%20121259%2F</url>
     <content type="text"><![CDATA[Next主题添加分享功能 next主题自带的jiathis分享功能（2018年4月已停止 http://www.lwd3699.com/keji/1564.html） 打开主next主题配置文件_config.yml ,搜索jiathis,改为true即可 123# Warning: JiaThis does not support https.(不支持https)jiathis: true ##uid: Get this uid from http://www.jiathis.com/ next主题自带的百度分享功能： 参考链接：https://asdfv1929.github.io/2018/05/25/baidu-share/ 打开主next主题配置文件_config.yml ,搜索baidushare,添加如下配置（其中 type 亦可以选择 slide)： 123baidushare: type: button baidushare: true #新增 由于baidushare不支持https，解决方法便是，将static文件夹解压保存至themes\next\source目录下 。 static文件链接： https://github.com/hrwhisper/baiduShare 修改文件：themes\next\layout_partials\share\baidushare.swig 将文件 末尾 部分的代码进行修改： 1.src=&apos;http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=&apos;+~(-new Date()/36e5)]; 改为： 1.src=&apos;/static/api/js/share.js?v=89860593.js?cdnversion=&apos;+~(-new Date()/36e5)]; 最后重新生成下，就能展示分享功能了。 NexT主题添加ShareSDK的分享： 传送门 ：ShareSDK ​]]></content>
