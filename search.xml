@@ -27,19 +27,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[Next 主题添加分享功能]]></title>
-    <url>%2Flinchao1002.github.io%2F2019%2F01%2F23%2F2019-1-24%20Next%E4%B8%BB%E9%A2%98%E6%B7%BB%E5%8A%A0%E5%88%86%E4%BA%AB%E5%8A%9F%E8%83%BD%20121259%2F</url>
-    <content type="text"><![CDATA[Next主题添加分享功能next主题自带的jiathis分享功能（2018年4月已停止 http://www.lwd3699.com/keji/1564.html）打开主next主题配置文件_config.yml ,搜索jiathis,改为true即可123# Warning: JiaThis does not support https.(不支持https)jiathis: true ##uid: Get this uid from http://www.jiathis.com/next主题自带的百度分享功能：参考链接：https://asdfv1929.github.io/2018/05/25/baidu-share/打开主next主题配置文件_config.yml ,搜索baidushare,添加如下配置（其中 type 亦可以选择 slide)：123baidushare: type: button baidushare: true #新增由于baidushare不支持https，解决方法便是，将static文件夹解压保存至themes\next\source目录下 。static文件链接： https://github.com/hrwhisper/baiduShare修改文件：themes\next\layout_partials\share\baidushare.swig将文件 末尾 部分的代码进行修改：1.src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];改为： 1.src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];最后重新生成下，就能展示分享功能了。NexT主题添加ShareSDK的分享：传送门 ：ShareSDK​]]></content>
-      <categories>
-        <category>Hexo</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
-        <tag>Next</tag>
-        <tag>ShareSDK分享</tag>
-      </tags>
-  </entry>
-  <entry>
     <title><![CDATA[Next 主题添加站内搜索功能]]></title>
     <url>%2Flinchao1002.github.io%2F2019%2F01%2F23%2FNext%20%E4%B8%BB%E9%A2%98%E6%B7%BB%E5%8A%A0%E7%AB%99%E5%86%85%E6%90%9C%E7%B4%A2%E5%8A%9F%E8%83%BD%2F</url>
     <content type="text"><![CDATA[Next 主题添加站内搜索功能详细请看：https://github.com/wzpan/hexo-generator-search安装 hexo-generator-searchdb, 站点根目录执行以下命令1npm install hexo-generator-searchdb --save编辑 站点配置文件, 新增以下内容到任意位置12345search: path: search.xml field: post format: html limit: 10000编辑 主题配置文件, 启用本地搜索功能123# Local searchlocal_search: enable: true可能出现的问题如果出现点击搜索一直停留在加载状态，可能是文件编码问题，可以在本地测试时访问根目录下 search.xml 文件1localhost:4000/search.xml查看报错信息]]></content>
@@ -79,6 +66,18 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[python-微信轰炸小程序]]></title>
+    <url>%2Flinchao1002.github.io%2F2018%2F05%2F22%2Fpython%E5%BE%AE%E4%BF%A1%E8%BD%B0%E7%82%B8%E5%B0%8F%E7%A8%8B%E5%BA%8F%2F</url>
+    <content type="text"><![CDATA[前言◾基于python，这个小程序是用python写的◾使用的是python第三方库itchat，itchat模块是一位叫littlecodersh的大神写的模块，附上大神的github地址,有兴趣的朋友可以去尝试玩一下itchat模块，很有趣的！！！https://github.com/littlecodersh/ItChat准备◾Python3.6 需要安装python3.6并配置好环境路径◾安装好python后，打开电脑的CMD终端输入pip install itchat安装itchat模块◾需要设置好默认看图软件核心代码import itchatimport timeprint(‘扫一下弹出来的二维码’) itchat.auto_login(hotReload=True) boom_remark_name = input(‘输入你要轰炸的人的微信备注，按回车建继续’) message = input(‘输入你要轰炸的内容，按回车键开始轰炸’) boom_obj = itchat.search_friends(remarkName=boom_remark_name)[0][‘UserName’]while True:time.sleep(0.5) print(‘正在轰炸。。。’) itchat.send_msg(msg=message, toUserName=boom_obj)代码讲解import itchat导入itchat模块import time导入time模块itchat.auto_login(hotReload=True)登录微信，采用热加载的方式登录网页版的微信，会生成一个itchat.pkl的文件，用于保持登录状态，有点类似于cookieboom_remark_name = input(‘输入你要轰炸的人的微信备注，按回车建继续’) 这里一定要输入你给微信好友的备注名，否者无法定位到好友message = input(‘输入你要轰炸的内容，按回车键开始轰炸’)这里输入要轰炸的内容boom_obj = itchat.search_friends(remarkName=boom_remarkname)[0][‘UserName’]这里通过微信好友的备注名找到微信好友的信息，再通过UserName定位到好友while True: 死循环轰炸 time.sleep(0.5)设置睡眠，以免出现消息发送频繁导致不能发送微信消息，此处可自行设置，睡眠时间不能太短 print(‘正在轰炸。。。’) itchat.send_msg(msg=message, toUserName=boom_obj)如何使用◾打开CMD终端◾输入python◾将We.py文件拖入终端◾按回车◾扫一下弹出来的二维码，确认登录微信◾输入你要轰炸的人的微信备注(!!!一定要是微信好友的备注，没有备注请添加备注)◾输入要轰炸的内容◾按回车键开始轰炸如何退出按Ctrl + C 退出轰炸]]></content>
+      <categories>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>itchat模块</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Next主题个性化之自动更换背景图片]]></title>
     <url>%2Flinchao1002.github.io%2F2018%2F01%2F25%2FNext%E4%B8%BB%E9%A2%98%E4%B8%AA%E6%80%A7%E5%8C%96%E4%B9%8B%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%8D%A2%E8%83%8C%E6%99%AF%E5%9B%BE%E7%89%87%2F</url>
     <content type="text"><![CDATA[Next主题个性化之自动更换背景图片如果觉得next的空白主题看腻了或者太多人用觉得不够个性化，那么不妨试试自动更新背景图片（简单且酷）。实现的原理：调用了网站的接口。自动更换背景的实现是修改添加背景的css样式实现。图片来源是 ：https://source.unsplash.com/这个网站，里面不仅免费提供了很多高清美图，而且还提供api接口调用，实在是良心。1 .修改背景样式修改themes\next\source\css\ _custom\custom.styl文件，这个是Next故意留给用户自己个性化定制一些样式的文件，添加以下代码：body {background:url(https://source.unsplash.com/random/1600x900);background-repeat: no-repeat;background-attachment:fixed;background-position:50% 50%;}如果自己不喜欢这个网址提供的图片做背景，那么修改url()里面的路径即可。repeat、attachment、position就是调整图片的位置，不重复出现、不滚动等等。2.修改不透明度完成这一步其实背景就会自动更换了，但是会出现一个问题，因为next主题的背景是纯透明的，这样子就造成背景图片的影响看不见文字，这对于博客来说肯定不行。那么就需要调整背景的不透明度了。同样是修改themes\next\source\css\ _custom\custom.styl文件。在后面添加如下代码body {background:url(https://source.unsplash.com/random/1600x900);background-repeat: no-repeat;background-attachment:fixed;background-position:50% 50%;}.content-wrap {opacity: 0.86;}(实际需要根据选择的主题来添加)然后 hexo clean hexo g hexo d 便可以实现了参考链接：https://blog.csdn.net/mango_haoming/article/details/78473243]]></content>
@@ -99,6 +98,31 @@
       </categories>
       <tags>
         <tag>IT</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[hexo next主题添加pdf]]></title>
+    <url>%2Flinchao1002.github.io%2F2017%2F01%2F25%2Fhexo-next%E4%B8%BB%E9%A2%98%E6%B7%BB%E5%8A%A0pdf%2F</url>
+    <content type="text"><![CDATA[next 添加支持 pdf安装npm install –save hexo-pdf使用外部链接1&#123;% pdf http://7xov2f.com1.z0.glb.clouddn.com/bash_freshman.pdf %&#125;内部链接【在博客source\_posts\，文件夹下创建一个文章如**.md,同时需要再创建一个文件夹，放我们要上传的PDF文章 】1&#123;% pdf /hexo/next-pdf/1.pdf %&#125;]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+        <tag>next</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Next 主题添加分享功能]]></title>
+    <url>%2Flinchao1002.github.io%2F2017%2F01%2F23%2F2019-1-24%20Next%E4%B8%BB%E9%A2%98%E6%B7%BB%E5%8A%A0%E5%88%86%E4%BA%AB%E5%8A%9F%E8%83%BD%20121259%2F</url>
+    <content type="text"><![CDATA[Next主题添加分享功能next主题自带的jiathis分享功能（2018年4月已停止 http://www.lwd3699.com/keji/1564.html）打开主next主题配置文件_config.yml ,搜索jiathis,改为true即可123# Warning: JiaThis does not support https.(不支持https)jiathis: true ##uid: Get this uid from http://www.jiathis.com/next主题自带的百度分享功能：参考链接：https://asdfv1929.github.io/2018/05/25/baidu-share/打开主next主题配置文件_config.yml ,搜索baidushare,添加如下配置（其中 type 亦可以选择 slide)：123baidushare: type: button baidushare: true #新增由于baidushare不支持https，解决方法便是，将static文件夹解压保存至themes\next\source目录下 。static文件链接： https://github.com/hrwhisper/baiduShare修改文件：themes\next\layout_partials\share\baidushare.swig将文件 末尾 部分的代码进行修改：1.src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];改为： 1.src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];最后重新生成下，就能展示分享功能了。NexT主题添加ShareSDK的分享：传送门 ：ShareSDK​]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+        <tag>Next</tag>
+        <tag>ShareSDK分享</tag>
       </tags>
   </entry>
   <entry>
