@@ -77,6 +77,29 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[MongoDb数据库基本知识]]></title>
+    <url>%2Flinchao1002.github.io%2F2018%2F08%2F23%2FMongoDB%E7%89%B9%E7%82%B9%2F</url>
+    <content type="text"><![CDATA[MongoDb 学习：http://www.runoob.com/mongodb/mongodb-tutorial.htmlMongoDB特点:高性能、易部署、易使用，存储数据非常方便。主要功能特性有：面向集合存储，易存储对象类型的数据。模式自由。支持动态查询。支持完全索引，包含内部对象。支持查询。支持复制和故障恢复。使用高效的二进制数据存储，包括大型对象（如视频等）。自动处理碎片，以支持云计算层次的扩展性支持Python，PHP，Ruby，Java，C，C#，Javascript，Perl及C++语言的驱动程序，社区中也提供了对Erlang及.NET等平台的驱动程序。文件存储格式为BSON（一种JSON的扩展）。可通过网络访问。功能:面向集合的存储：适合存储对象及JSON形式的数据。动态查询：Mongo支持丰富的查询表达式。查询指令使用JSON形式的标记，可轻易查询文档中内嵌的对象及数组。完整的索引支持：包括文档内嵌对象及数组。Mongo的查询优化器会分析查询表达式，并生成一个高效的查询计划。查询监视：Mongo包含一个监视工具用于分析数据库操作的性能。复制及自动故障转移：Mongo数据库支持服务器之间的数据复制，支持主-从模式及服务器之间的相互复制。复制的主要目标是提供冗余及自动故障转移。高效的传统存储方式：支持二进制数据及大型对象（如照片或图片）自动分片以支持云级别的伸缩性：自动分片功能支持水平的数据库集群，可动态添加额外的机器。适用场合:网站数据：Mongo非常适合实时的插入，更新与查询，并具备网站实时数据存储所需的复制及高度伸缩性。缓存：由于性能很高，Mongo也适合作为信息基础设施的缓存层。在系统重启之后，由Mongo搭建的持久化缓存层可以避免下层的数据源 过载。大尺寸，低价值的数据：使用传统的关系型数据库存储一些数据时可能会比较昂贵，在此之前，很多时候程序员往往会选择传统的文件进行存储。高伸缩性的场景：Mongo非常适合由数十或数百台服务器组成的数据库。Mongo的路线图中已经包含对MapReduce引擎的内置支持。用于对象及JSON数据的存储：Mongo的BSON数据格式非常适合文档化格式的存储及查询。MongoDB要注意的问题因为MongoDB是全索引的，所以它直接把索引放在内存中，因此最多支持2.5G的数据。如果是64位的会更多。因为没有恢复机制，因此要做好数据备份因为默认监听地址是127.0.0.1，因此要进行身份验证，否则不够安全；如果是自己使用，建议配置成localhost主机名通过GetLastError确保变更。（这个不懂，实际中没用过）MongoDB结构介绍MongoDB中存储的对象时BSON，是一种类似JSON的二进制文件，它是由许多的键值对组成。如下所示12345678910&#123; "name" : "huangz", "age" : 20, "sex" : "male" &#125; &#123; "name" : "jack", "class" : 3, "grade" : 3 &#125;而数据库的整体结构组成如下：键值对–》文档–》集合–》数据库MongoDB的文件单个大小不超过4M，但是新版本后可提升到16MMongoDB中的key命名规则如下：“\0”不能使用带有”.”号，”_”号和”$”号前缀的Key被保留大小写有区别，Age不同于age同一个文档不能有相同的Key除了上面几条规则外，其他所有UTF-8字符都可以使用常用命令：1 #进入数据库1use admin2 #增加或修改密码123db.addUser('xingoo','123')db.addUser("xingoo","123",true) 参数分别为 用户名、密码、是否只读3 #查看用户列表1db.system.users.find()4 #用户认证1db.auth('xingoo','123')5 #删除用户1db.removeUser('xingoo')6 #查看所有用户1show users7 #查看所有数据库1show dbs8 #查看所有的collection集合1show collections9 #查看各个collection的状态1db.printCollectionStats()10 #查看主从复制状态1db.printReplicationInfo()11 #修复数据库1db.repairDatabase()12 #设置profiling,0:off 1:slow 2 all1db.setProfilingLevel(1)13 #查看profiling1show profiling14 #拷贝数据库123db.copyDatabase('xingootest','xingootest1')db.copyDatabase("xingootest","temp","127.0.0.1")15 #删除集合collection1db.xingootest.drop()16 #删除当前数据库1db.dropDatabase()MongoDB增删改命令1 #存储嵌套的对象1db.foo.save(&#123;'name':xingoo,'age':25,'address':&#123;'city':'changchun','Province':'Jilin'&#125;&#125;)2 #存储数组对象1db.foo.save(&#123;'name':xingoo,'age':25,'address':['Jilin Province','Liaoning Province']&#125;)3 #根据query条件修改，如果不存在则插入，允许修改多条记录1db.foo.update(&#123;'age':'25'&#125;,&#123;'$set':&#123;'name':'xingoo'&#125;&#125;,upsert=true,multi=true)4 #删除yy=5的记录1db.foo.remove(&#123;'name':'xingoo'&#125;)5 #删除所有的记录1db.foo.remove()索引1 #增加索引:1 asc -1 desc1db.foo.ensureIndex(&#123;firstname:1,lastname:-1&#125;,&#123;unieap:true&#125;)2 #索引子对象(不懂)1db.foo.ensureIndex(&#123;'Al.Em':!&#125;)3 #查看索引信息123db.foo.getIndexes()db.foo.getIndexKeys()4 #根据索引名删除索引(不懂)1db.foo.dropIndex('Al.Em_1')查询条件操作符12345678910 1 $gt ---- &gt; 2 $lt ---- &lt; 3 $gte ---- &gt;= 4 $lte ---- &lt;= 5 $ne ---- != 、&lt;&gt; 6 $in ---- in 7 $nin ---- not in 8 $all ---- all 9 $or ---- or10 $not ---- 反匹配1 #查询所有记录1db.foo.find() ---- select * from foo2 #查询某列非重复的记录1db.foo.distinct("xingoo") ---- select distinct name from foo3 #查询age = 22 的记录1db.foo.find(&#123;"age":22&#125;) ---- select * from foo where age = 224 #查询age &gt; 22 的记录1db.foo.find(&#123;age:&#123;$gt:22&#125;&#125;) ---- select * from foo where age &gt; 225 #查询age &lt; 22 的记录1db.foo.find(&#123;age:&#123;$lt:22&#125;&#125;) ---- select * from foo where age &lt; 226 #查询age &lt;= 25的记录1db.foo.find(&#123;age:&#123;$lte:25&#125;&#125;)7 #查询age &gt;= 23 并且 age &lt;=26的记录1db.foo.find(&#123;age:&#123;lte:26&#125;&#125;)8 #查询name中包含xingoo的数据1db.foo.find(&#123;name:/xingoo/&#125;) ---- select * from foo where name like '%xingoo%'9 #查询name中以xingoo开头的数据1db.foo.find(&#123;name:/^xingoo/&#125;) ---- select * from foo where name like 'xingoo%'10 #查询指定列name、age的数据1db.foo.find(&#123;&#125;,&#123;name:1,age:1&#125;) ---- select name,age from foo11 #查询制定列name、age数据，并且age &gt; 221db.foo.find(&#123;age:&#123;$gt:22&#125;&#125;,&#123;name:1,age:1&#125;) ---- select name,age from foo where age &gt;2212 #按照年龄排序12升序：db.foo.find().sort(&#123;age:1&#125;) 降序：db.foo.find().sort(&#123;age:-1&#125;)13 #查询name=xingoo.age=25的数据1db.foo.find(&#123;name:'xingoo',age:22&#125;) ---- select * from foo where name='xingoo' and age ='25'14#查询前5条数据1db.foo.find().limit(5) ---- select top 5 * from foo15 #查询10条以后的数据1db.foo.find().skip(10) ---- select * from foo where id not in (select top 10 * from foo);16 #查询在5-10之间的数据1db.foo.find().limit(10).skip(5)17 #or与查询1db.foo.find(&#123;$or:[&#123;age:22&#125;,&#123;age:25&#125;]&#125;) ---- select * from foo where age=22 or age =2518 #查询第一条数据1db.foo.findOne() 、db.foo.find().limit(1)---- select top 1 * from foo19 #查询某个结果集的记录条数1db.foo.find(&#123;age:&#123;$gte:25&#125;&#125;).count() ---- select count(*) from foo where age &gt;= 2020 #按照某列进行排序(不懂)1db.foo.find(&#123;sex:&#123;$exists:true&#125;&#125;).count() ---- select count(sex) from foo21 #查询age取模10等于0的数据1db.foo.find('this.age % 10 == 0')、db.foo.find(&#123;age:&#123;$mod:[10,0]&#125;&#125;)22 #匹配所有1db.foo.find(&#123;age:&#123;$all:[22,25]&#125;&#125;)23 #查询不匹配name=X*带头的记录1db.foo.find(&#123;name:&#123;$not:/^X.*/&#125;&#125;)24 #排除返回age字段1db.foo.find(&#123;name:'xingoo'&#125;,&#123;age:0&#125;)25 #判断字段是否存在1db.foo.find(&#123;name:&#123;$exists:true&#125;&#125;)管理1 #查看collection数据大小1db.xingootest.dataSize()2 #查看collection状态1db.xingootest.stats()3 #查询所有索引的大小1db.xingootest.totalIndexSize()原文：https://blog.csdn.net/qq_35553341/article/details/77096254]]></content>
+      <categories>
+        <category>Mongodb</category>
+      </categories>
+      <tags>
+        <tag>Mongodb</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Django配置celery执行异步任务和定时任务]]></title>
+    <url>%2Flinchao1002.github.io%2F2018%2F07%2F22%2FDjango%E9%85%8D%E7%BD%AEcelery%E6%89%A7%E8%A1%8C%E5%BC%82%E6%AD%A5%E4%BB%BB%E5%8A%A1%E5%92%8C%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%2F</url>
+    <content type="text"><![CDATA[Django配置celery执行异步任务和定时任务实例学习：https://github.com/search?q=django+celery官方文档：http://www.celeryproject.org/Celery4.1中文文档-用户指南(User Guide)：https://blog.csdn.net/weixin_40475396/article/details/80439781celery是一个基于python开发的简单、灵活且可靠的分布式任务队列框架，支持使用任务队列的方式在分布式的机器/进程/线程上执行任务调度。采用典型的生产者-消费者模型，主要由三部分组成：消息队列broker：broker实际上就是一个MQ队列服务，可以使用redis、rabbitmq等作为broker处理任务的消费者workers：broker通知worker队列中有任务，worker去队列中取出任务执行，每一个worker就是一个进程存储结果的backend：执行结果存储在backend，默认也会存储在broker使用的MQ队列服务中，也可以单独配置用何种服务做backend异步任务我的异步使用场景为项目上线：前端web上有个上线按钮，点击按钮后发请求给后端，后端执行上线过程要5分钟，后端在接收到请求后把任务放入队列异步执行，同时马上返回给前端一个任务执行中的结果。若果没有异步执行会怎么样呢？同步的情况就是执行过程中前端一直在等后端返回结果，页面转呀转的就转超时了。异步任务配置1.安装rabbitmq，这里我们使用rabbitmq作为broker，安装完成后默认启动了，也不需要其他任何配置12# apt-get install rabbitmq-server复制代码2.安装celery12# pip3 install celery复制代码3.celery用在django项目中，django项目目录结构(简化)如下1234567891011121314151617181920website/|-- deploy| |-- admin.py| |-- apps.py| |-- __init__.py| |-- models.py| |-- tasks.py| |-- tests.py| |-- urls.py| `-- views.py|-- manage.py|-- README`-- website |-- celery.py |-- __init__.py |-- settings.py |-- urls.py `-- wsgi.py复制代码4.创建website/celery.py主文件12345678910111213141516171819202122232425from __future__ import absolute_import, unicode_literalsimport osfrom celery import Celery, platforms# set the default Django settings module for the 'celery' program.os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'website.settings')app = Celery('website')# Using a string here means the worker don't have to serialize# the configuration object to child processes.# - namespace='CELERY' means all celery-related configuration keys# should have a `CELERY_` prefix.app.config_from_object('django.conf:settings', namespace='CELERY')# Load task modules from all registered Django app configs.app.autodiscover_tasks()# 允许root 用户运行celeryplatforms.C_FORCE_ROOT = True@app.task(bind=True)def debug_task(self): print('Request: &#123;0!r&#125;'.format(self.request))复制代码5.在website/__init__.py文件中增加如下内容，确保django启动的时候这个app能够被加载到12345678from __future__ import absolute_import# This will make sure the app is always imported when# Django starts so that shared_task will use this app.from .celery import app as celery_app__all__ = ['celery_app']复制代码6.各应用创建tasks.py文件，这里为deploy/tasks.py1234567from __future__ import absolute_importfrom celery import shared_task@shared_taskdef add(x, y): return x + y复制代码注意tasks.py必须建在各app的根目录下，且只能叫tasks.py，不能随意命名7.views.py中引用使用这个tasks异步处理12345from deploy.tasks import adddef post(request): result = add.delay(2, 3)复制代码使用函数名.delay()即可使函数异步执行可以通过result.ready()来判断任务是否完成处理如果任务抛出一个异常，使用result.get(timeout=1)可以重新抛出异常如果任务抛出一个异常，使用result.traceback可以获取原始的回溯信息8.启动celery12# celery -A website worker -l info复制代码9.这样在调用post这个方法时，里边的add就可以异步处理了定时任务定时任务的使用场景就很普遍了，比如我需要定时发送报告给老板~定时任务配置1.website/celery.py文件添加如下配置以支持定时任务crontab12345678910111213141516from celery.schedules import crontabapp.conf.update( CELERYBEAT_SCHEDULE = &#123; 'sum-task': &#123; 'task': 'deploy.tasks.add', 'schedule': timedelta(seconds=20), 'args': (5, 6) &#125; 'send-report': &#123; 'task': 'deploy.tasks.report', 'schedule': crontab(hour=4, minute=30, day_of_week=1), &#125; &#125;)复制代码定义了两个task：名字为’sum-task’的task，每20秒执行一次add函数，并传了两个参数5和6名字为’send-report’的task，每周一早上4：30执行report函数timedelta是datetime中的一个对象，需要from datetime import timedelta引入，有如下几个参数days：天seconds：秒microseconds：微妙milliseconds：毫秒minutes：分hours：小时crontab的参数有：month_of_year：月份day_of_month：日期day_of_week：周hour：小时minute：分钟2.deploy/tasks.py文件添加report方法：1234@shared_taskdef report(): return 5复制代码3.启动celery beat，celery启动了一个beat进程一直在不断的判断是否有任务需要执行12# celery -A website beat -l info复制代码Tips1.如果你同时使用了异步任务和计划任务，有一种更简单的启动方式celery -A website worker -b -l info，可同时启动worker和beat 2.如果使用的不是rabbitmq做队列那么需要在主配置文件中website/celery.py配置broker和backend，如下：12345# redis做MQ配置app = Celery('website', backend='redis', broker='redis://localhost')# rabbitmq做MQ配置app = Celery('website', backend='amqp', broker='amqp://admin:admin@localhost')复制代码3.celery不能用root用户启动的话需要在主配置文件中添加platforms.C_FORCE_ROOT = True4.celery在长时间运行后可能出现内存泄漏，需要添加配置CELERYD_MAX_TASKS_PER_CHILD = 10，表示每个worker执行了多少个任务就死掉]]></content>
+      <categories>
+        <category>Django</category>
+      </categories>
+      <tags>
+        <tag>django</tag>
+        <tag>celery</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[python-微信轰炸小程序]]></title>
     <url>%2Flinchao1002.github.io%2F2018%2F05%2F22%2Fpython%E5%BE%AE%E4%BF%A1%E8%BD%B0%E7%82%B8%E5%B0%8F%E7%A8%8B%E5%BA%8F%2F</url>
     <content type="text"><![CDATA[前言◾基于python，这个小程序是用python写的◾使用的是python第三方库itchat，itchat模块是一位叫littlecodersh的大神写的模块，附上大神的github地址,有兴趣的朋友可以去尝试玩一下itchat模块，很有趣的！！！https://github.com/littlecodersh/ItChat准备◾Python3.6 需要安装python3.6并配置好环境路径◾安装好python后，打开电脑的CMD终端输入pip install itchat安装itchat模块◾需要设置好默认看图软件核心代码import itchatimport timeprint(‘扫一下弹出来的二维码’) itchat.auto_login(hotReload=True) boom_remark_name = input(‘输入你要轰炸的人的微信备注，按回车建继续’) message = input(‘输入你要轰炸的内容，按回车键开始轰炸’) boom_obj = itchat.search_friends(remarkName=boom_remark_name)[0][‘UserName’]while True:time.sleep(0.5) print(‘正在轰炸。。。’) itchat.send_msg(msg=message, toUserName=boom_obj)代码讲解import itchat导入itchat模块import time导入time模块itchat.auto_login(hotReload=True)登录微信，采用热加载的方式登录网页版的微信，会生成一个itchat.pkl的文件，用于保持登录状态，有点类似于cookieboom_remark_name = input(‘输入你要轰炸的人的微信备注，按回车建继续’) 这里一定要输入你给微信好友的备注名，否者无法定位到好友message = input(‘输入你要轰炸的内容，按回车键开始轰炸’)这里输入要轰炸的内容boom_obj = itchat.search_friends(remarkName=boom_remarkname)[0][‘UserName’]这里通过微信好友的备注名找到微信好友的信息，再通过UserName定位到好友while True: 死循环轰炸 time.sleep(0.5)设置睡眠，以免出现消息发送频繁导致不能发送微信消息，此处可自行设置，睡眠时间不能太短 print(‘正在轰炸。。。’) itchat.send_msg(msg=message, toUserName=boom_obj)如何使用◾打开CMD终端◾输入python◾将We.py文件拖入终端◾按回车◾扫一下弹出来的二维码，确认登录微信◾输入你要轰炸的人的微信备注(!!!一定要是微信好友的备注，没有备注请添加备注)◾输入要轰炸的内容◾按回车键开始轰炸如何退出按Ctrl + C 退出轰炸]]></content>
@@ -86,6 +109,20 @@
       <tags>
         <tag>python</tag>
         <tag>itchat模块</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Django实现数据库读写分离]]></title>
+    <url>%2Flinchao1002.github.io%2F2018%2F05%2F22%2F%E9%85%8D%E7%BD%AEDjango%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%2F</url>
+    <content type="text"><![CDATA[配置Django实现数据库读写分离django在进行数据库操作的时候，读取数据与写数据（增、删、改）可以分别从不同的数据库进行操作。1. 在配置文件中增加slave数据库的配置123456789101112131415161718DATABASES = &#123; 'default': &#123; 'ENGINE': 'django.db.backends.mysql', 'HOST': '10.211.55.', 'PORT': 3306, 'USER': '', 'PASSWORD': '', 'NAME': '' &#125;, 'slave': &#123; 'ENGINE': 'django.db.backends.mysql', 'HOST': '10.211.55.', 'PORT': '', 'USER': 'root', 'PASSWORD': 'mysql', 'NAME': '' &#125;&#125;2. 创建数据库操作的路由分发类在utils中创建db_router.py1234567891011121314class MasterSlaveDBRouter(object): """数据库主从读写分离路由""" def db_for_read(self, model, **hints): """读数据库""" return "slave" def db_for_write(self, model, **hints): """写数据库""" return "default" def allow_relation(self, obj1, obj2, **hints): """是否运行关联操作""" return True3. 配置读写分离路由在配置文件中增加12# 配置读写分离DATABASE_ROUTERS = ['utils.db_router.MasterSlaveDBRouter']]]></content>
+      <categories>
+        <category>Python</category>
+        <category>Django</category>
+      </categories>
+      <tags>
+        <tag>django</tag>
+        <tag>python</tag>
+        <tag>mysql</tag>
       </tags>
   </entry>
   <entry>
@@ -171,14 +208,14 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[About]]></title>
-    <url>%2Flinchao1002.github.io%2Fabout%2Findex.html</url>
-    <content type="text"><![CDATA[简介：星座：天秤座/Boy邮箱: linchao1002@qq.com歡迎收藏本站，下面留言會盡可能答復 (右下角可以实时联系哦，方便尽快回复你)]]></content>
-  </entry>
-  <entry>
     <title><![CDATA[categories]]></title>
     <url>%2Flinchao1002.github.io%2Fcategories%2Findex.html</url>
     <content type="text"><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title><![CDATA[About]]></title>
+    <url>%2Flinchao1002.github.io%2Fabout%2Findex.html</url>
+    <content type="text"><![CDATA[简介：星座：天秤座/Boy邮箱: linchao1002@qq.com歡迎收藏本站，下面留言會盡可能答復 (右下角可以实时联系哦，方便尽快回复你)]]></content>
   </entry>
   <entry>
     <title><![CDATA[tags]]></title>
