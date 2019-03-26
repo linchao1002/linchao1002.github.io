@@ -100,6 +100,18 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[centos7 下通过nginx+uwsgi部署django应用]]></title>
+    <url>%2Flinchao1002.github.io%2F2018%2F06%2F21%2Fcentos7%20%E4%B8%8B%E9%80%9A%E8%BF%87nginx%2Buwsgi%E9%83%A8%E7%BD%B2django%E5%BA%94%E7%94%A8%2F</url>
+    <content type="text"><![CDATA[centos学习：http://www.runoob.com/linux/linux-install.html1. 安装python3.61234567891011121314151. 获取wget https://www.python.org/ftp/python/3.6.2/Python-3.6.2.tgztar -xzvf Python-3.6.2.tgz -C /tmpcd /tmp/Python-3.6.2/2. 把Python3.6安装到 /usr/local 目录./configure --prefix=/usr/localmakemake altinstall3. 更改/usr/bin/python链接ln -s /usr/local/bin/python3.6 /usr/bin/python32. maridb12345678910111213141516171819202122232425262728293031323334353637381. 安装 sudo yum install mariadb-server2. 启动， 重启 sudo systemctl start mariadb sudo systemctl restart mariadb3. 设置bind-ip vim /etc/my.cnf 在 [mysqld]: 下面加一行 bind-address = 0.0.0.04. 设置外部ip可以访问 先进入mysql才能运行下面命令: mysql 直接进入就行 GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '123456' WITH GRANT OPTION; FLUSH PRIVILEGES5. 设置阿里云的对外端口 视频中有讲解这部分6. 安装mysqlclient出问题 centos 7： yum install python-devel mariadb-devel -y ubuntu： sudo apt-get install libmysqlclient-dev 然后： pip install mysqlclient3. 安装nginx1https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-centos-74. 安装virtualenvwrapper12yum install python-setuptools python-develpip install virtualenvwrapper12&gt; 编辑.bashrc文件&gt;12export WORKON_HOME=$HOME/.virtualenvssource /usr/local/bin/virtualenvwrapper.sh1234567891011&gt; 重新加载.bashrc文件&gt; source ~/.bashrc&gt; &gt; 新建虚拟环境&gt; mkvirtualenv mxonline&gt; &gt; 进入虚拟环境 &gt; workon mxonline&gt; &gt; 安装pip包&gt;123456我们可以通过 pip freeze &gt; requirements.txt 将本地的虚拟环境安装包相信信息导出来然后将requirements.txt文件上传到服务器之后运行：pip install -r requirements.txt安装依赖包5. 安装uwsgi1pip install uwsgi6. 测试uwsgi1uwsgi --http :8000 --module MxOnline.wsgi7. 配置nginx1234567891011121314151617181920212223242526272829303132333435新建uc_nginx.conf# the upstream component nginx needs to connect toupstream django &#123;# server unix:///path/to/your/mysite/mysite.sock; # for a file socketserver 127.0.0.1:8000; # for a web port socket (we'll use this first)&#125;# configuration of the serverserver &#123;# the port your site will be served onlisten 80;# the domain name it will serve forserver_name 你的ip地址 ; # substitute your machine's IP address or FQDNcharset utf-8;# max upload sizeclient_max_body_size 75M; # adjust to taste# Django medialocation /media &#123; alias 你的目录/Mxonline/media; # 指向django的media目录&#125;location /static &#123; alias 你的目录/Mxonline/static; # 指向django的static目录&#125;# Finally, send all non-media requests to the Django server.location / &#123; uwsgi_pass django; include uwsgi_params; # the uwsgi_params file you installed&#125;&#125;8. 将该配置文件加入到nginx的启动配置文件中1sudo ln -s 你的目录/Mxonline/conf/nginx/uc_nginx.conf /etc/nginx/conf.d/8. 拉取所有需要的static file 到同一个目录12345在django的setting文件中，添加下面一行内容： STATIC_ROOT = os.path.join(BASE_DIR, "static/")运行命令 python manage.py collectstatic9. 运行nginx1sudo /usr/sbin/nginx这里需要注意 一定是直接用nginx命令启动， 不要用systemctl启动nginx不然会有权限问题10. 通过配置文件启动uwsgi123456789101112131415161718192021222324252627282930313233343536新建uwsgi.ini 配置文件， 内容如下： # mysite_uwsgi.ini file [uwsgi] # Django-related settings # the base directory (full path) chdir = /home/bobby/Projects/MxOnline # Django's wsgi file module = MxOnline.wsgi # the virtualenv (full path) # process-related settings # master master = true # maximum number of worker processes processes = 10 # the socket (use the full path to be safe socket = 127.0.0.1:8000 # ... with appropriate permissions - may be needed # chmod-socket = 664 # clear environment on exit vacuum = true virtualenv = /home/bobby/.virtualenvs/mxonline logto = /tmp/mylog.log注： chdir： 表示需要操作的目录，也就是项目的目录 module： wsgi文件的路径 processes： 进程数 virtualenv：虚拟环境的目录workon mxonlineuwsgi -i 你的目录/Mxonline/conf/uwsgi.ini &amp;访问1http://你的ip地址/]]></content>
+      <categories>
+        <category>Django</category>
+      </categories>
+      <tags>
+        <tag>django</tag>
+        <tag>nginx</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[python-微信轰炸小程序]]></title>
     <url>%2Flinchao1002.github.io%2F2018%2F05%2F22%2Fpython%E5%BE%AE%E4%BF%A1%E8%BD%B0%E7%82%B8%E5%B0%8F%E7%A8%8B%E5%BA%8F%2F</url>
     <content type="text"><![CDATA[前言◾基于python，这个小程序是用python写的◾使用的是python第三方库itchat，itchat模块是一位叫littlecodersh的大神写的模块，附上大神的github地址,有兴趣的朋友可以去尝试玩一下itchat模块，很有趣的！！！https://github.com/littlecodersh/ItChat准备◾Python3.6 需要安装python3.6并配置好环境路径◾安装好python后，打开电脑的CMD终端输入pip install itchat安装itchat模块◾需要设置好默认看图软件核心代码import itchatimport timeprint(‘扫一下弹出来的二维码’) itchat.auto_login(hotReload=True) boom_remark_name = input(‘输入你要轰炸的人的微信备注，按回车建继续’) message = input(‘输入你要轰炸的内容，按回车键开始轰炸’) boom_obj = itchat.search_friends(remarkName=boom_remark_name)[0][‘UserName’]while True:time.sleep(0.5) print(‘正在轰炸。。。’) itchat.send_msg(msg=message, toUserName=boom_obj)代码讲解import itchat导入itchat模块import time导入time模块itchat.auto_login(hotReload=True)登录微信，采用热加载的方式登录网页版的微信，会生成一个itchat.pkl的文件，用于保持登录状态，有点类似于cookieboom_remark_name = input(‘输入你要轰炸的人的微信备注，按回车建继续’) 这里一定要输入你给微信好友的备注名，否者无法定位到好友message = input(‘输入你要轰炸的内容，按回车键开始轰炸’)这里输入要轰炸的内容boom_obj = itchat.search_friends(remarkName=boom_remarkname)[0][‘UserName’]这里通过微信好友的备注名找到微信好友的信息，再通过UserName定位到好友while True: 死循环轰炸 time.sleep(0.5)设置睡眠，以免出现消息发送频繁导致不能发送微信消息，此处可自行设置，睡眠时间不能太短 print(‘正在轰炸。。。’) itchat.send_msg(msg=message, toUserName=boom_obj)如何使用◾打开CMD终端◾输入python◾将We.py文件拖入终端◾按回车◾扫一下弹出来的二维码，确认登录微信◾输入你要轰炸的人的微信备注(!!!一定要是微信好友的备注，没有备注请添加备注)◾输入要轰炸的内容◾按回车键开始轰炸如何退出按Ctrl + C 退出轰炸]]></content>
@@ -208,14 +220,14 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[categories]]></title>
-    <url>%2Flinchao1002.github.io%2Fcategories%2Findex.html</url>
-    <content type="text"><![CDATA[]]></content>
-  </entry>
-  <entry>
     <title><![CDATA[About]]></title>
     <url>%2Flinchao1002.github.io%2Fabout%2Findex.html</url>
     <content type="text"><![CDATA[简介：星座：天秤座/Boy邮箱: linchao1002@qq.com歡迎收藏本站，下面留言會盡可能答復 (右下角可以实时联系哦，方便尽快回复你)]]></content>
+  </entry>
+  <entry>
+    <title><![CDATA[categories]]></title>
+    <url>%2Flinchao1002.github.io%2Fcategories%2Findex.html</url>
+    <content type="text"><![CDATA[]]></content>
   </entry>
   <entry>
     <title><![CDATA[tags]]></title>
