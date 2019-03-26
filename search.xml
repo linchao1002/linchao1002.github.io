@@ -27,17 +27,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[Nginx大全]]></title>
-    <url>%2Flinchao1002.github.io%2F2019%2F01%2F23%2FNginx%E7%AE%80%E4%BB%8B%2F</url>
-    <content type="text"><![CDATA[Nginx是一个高性能的HTTP和反向代理服务器，也是一个IMAP/POP3/SMTP服务器。Nginx是一款轻量级的Web服务器/反向代理服务器以及电子邮件代理服务器，其特点是占用内存少，并发能力强，在同类型的网页服务器中表现优秀Nginx是由伊戈尔.塞索耶夫开发的，于2004年10月4日公开源码，以类BSD许可证形式发布Nginx因它的稳定性，丰富的功能，示例配置文件和低系统资源的消耗而闻名中国大陆使用Nginx的网站:淘宝，京东，腾讯，百度，新浪，网易…官网http://nginx.org/中文资料http://www.nginx.cn/doc/index.htmlhttp://tengine.taobao.org/book/为什么选择Nginx作为We服务器：相比Apache，Nginx使用资源更少，支持更多的并发连接，体现更高的效率，使Nginx倍受欢迎，能够支持高达50000个并发连接数的响应作为负载均衡服务器：Nginx既可以在内部直接支持Redis和PHP，也可以支持作为HTTP代理服务器对外进行服务，Nginx使用C编写，不论是系统资源开销还是CPU使用效率都处理的非常优秀Nginx安装非常简单，配置文件非常简洁，Bug非常少：Nginx启动非常容易，并且几乎可以做到7 * 24小时不间断运行，即使运行数个月也不需要重新启动#Nginx安装Nginx安装主要有两种方式方法一、通过操作系统的包管理器进行安装：https://www.jianshu.com/p/96691511295f方法二、在官方网站下载源代码，编译安装：https://www.jianshu.com/p/96691511295f启动Nginxnginx [ -c configpath]信息查看nginx -vnginx -V控制Nginxnginx -s signalstop 快速关闭quit 优雅的关闭reload 重新加载配置通过系统管理systemctl status nginx 查看nginx状态systemctl start nginx 启动nginx服务systemctl stop nginx 关闭nginx服务systemctl enable nginx 设置开机自启systemctl disable nginx 禁止开机自启​#Nginx配置文件Nginx配置文件包含指定指令控制的模块。指令分为简单指令和块指令一个简单指令由名称和参数组成，以空格分隔，并以分号结尾一个块指令和简单指令具有相同的结构，但不是以分号结束，而是以一个大括号包围的一堆附 加指令结束如果一个大括号内可以有其他的指令，它就被称为一个上下文，比如（events，http，server，location）指令nginx -t 不运行，仅测试配置文件nginx -c configpath 从指定路径加载配置文件nginx -t -c configpath 测试指定配置文件1234567891011121314151617main 全局设置events&#123; 工作模式，连接配置 ...&#125;http&#123; http的配置 ... upstream xxx&#123; 负载均衡配置 ... &#125; server&#123; 主机设置 ... location xxx&#123; URL匹配 ... &#125; &#125;&#125;12345678#mainuser nginx; worker进程运行的用户和组worker_processes 1; 指定Nginx开启的子进程数，多核CPU建议设置和CPU数量一样的进程数error_log xxx level; 用来定义全局错误日志文件，通常放在var中，level有 debug，info，notice， warn，error，critpid xxx; 指定进程id的存储文件位置123456789101112131415161718#events指定工作模式和以及连接上限events&#123; use epoll; worker_connections 1024;&#125;use 指定nginx工作模式 epoll 高效工作模式，linux kqueue 高效工作模式， bsd poll 标准模式 select 标准模式worker_connections 定义nginx每个进程的最大连接数 正向代理 连接数 * 进程数 反向代理 连接数 * 进程数 / 4 linux系统限制最多能同时打开65535个文件，默认上限就是65535，可解除 ulimit -n 6553512345678910111213141516#http最核心的模块，主要负责http服务器相关配置，包含server，upstream子模块include mime.types;设置文件的mime类型include xxxconfig; 包含其它配置文件，分开规划解耦default_type xxx; 设置默认类型为二进制流，文件类型未知时就会使用默认log_format 设置日志格式sendfile 设置高效文件传输模式keepalive_timeout 设置客户端连接活跃超时gzip gzip压缩123456789101112131415161718#server用来指定虚拟主机listen 80; 指定虚拟主机监听的端口server_name localhost; 指定ip地址或域名，多个域名使用空格隔开charset utf-8; 指定网页的默认编码格式error_page 500 502 /50x.html 指定错误页面access_log xxx main; 指定虚拟主机的访问日志存放路径error_log xxx main; 指定虚拟主机的错误日志存放路径root xxx; 指定这个虚拟主机的根目录index xxx; 指定默认首页123456789101112131415161718#localtion核心中的核心，以后的主要配置都在这主要功能:定位url，解析url，支持正则匹配，还能支持条件，实现动静分离语法 location [modifier] uri&#123; ... &#125;modifier 修饰符 = 使用精确匹配并且终止搜索 ~ 区分大小写的正则表达式 ~* 不区分大小写的正则表达式 ^~ 最佳匹配，不是正则匹配，通常用来匹配目录 常用指令 alias 别名，定义location的其他名字，在文件系统中能够找到，如果location指定了正则表达式，alias将会引用正则表达式中的捕获，alias替代lication中匹配的部分，没有匹配的部分将会在文件系统中搜索123456789101112#反向代理proxy_pass URL; 反向代理转发地址，默认不转发header，需要转发header则设置 proxy_set_header HOST $host;proxy_method POST; 转发的方法名proxy_hide_header Cache-Control; 指定头部不被转发 proxy_pass_header Cache-Control; 设置哪些头部转发proxy_pass_request_header on; 设置转发http请求头proxy_pass_request_body on; 设置转发请求体1234567891011121314151617#upstream负载均衡模块，通过一个简单的调度算法来实现客户ip到后端服务器的负载平衡写法 upstream myproject&#123; ip_hash; server 127.0.0.1:8000; server 127.0.0.1:8001 down; server 127.0.0.1:8002 weight=3; server 127.0.0.1:8003 backup； fair； &#125;负载均衡算法 weight 负载权重 down 当前server不参与负载均衡 backup 其它机器全down掉或满载使用此服务 ip_hash 按每个请求的hash结果分配 fair 按后端响应时间来分（第三方的）]]></content>
-      <categories>
-        <category>Nginx</category>
-      </categories>
-      <tags>
-        <tag>Nginx</tag>
-      </tags>
-  </entry>
-  <entry>
     <title><![CDATA[Next 主题添加站内搜索功能]]></title>
     <url>%2Flinchao1002.github.io%2F2019%2F01%2F23%2FNext%20%E4%B8%BB%E9%A2%98%E6%B7%BB%E5%8A%A0%E7%AB%99%E5%86%85%E6%90%9C%E7%B4%A2%E5%8A%9F%E8%83%BD%2F</url>
     <content type="text"><![CDATA[Next 主题添加站内搜索功能详细请看：https://github.com/wzpan/hexo-generator-search安装 hexo-generator-searchdb, 站点根目录执行以下命令1npm install hexo-generator-searchdb --save编辑 站点配置文件, 新增以下内容到任意位置12345search: path: search.xml field: post format: html limit: 10000编辑 主题配置文件, 启用本地搜索功能123# Local searchlocal_search: enable: true可能出现的问题如果出现点击搜索一直停留在加载状态，可能是文件编码问题，可以在本地测试时访问根目录下 search.xml 文件1localhost:4000/search.xml查看报错信息]]></content>
@@ -47,6 +36,17 @@
       <tags>
         <tag>Hexo</tag>
         <tag>Next</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Nginx大全]]></title>
+    <url>%2Flinchao1002.github.io%2F2019%2F01%2F23%2FNginx%E7%AE%80%E4%BB%8B%2F</url>
+    <content type="text"><![CDATA[Nginx是一个高性能的HTTP和反向代理服务器，也是一个IMAP/POP3/SMTP服务器。Nginx是一款轻量级的Web服务器/反向代理服务器以及电子邮件代理服务器，其特点是占用内存少，并发能力强，在同类型的网页服务器中表现优秀Nginx是由伊戈尔.塞索耶夫开发的，于2004年10月4日公开源码，以类BSD许可证形式发布Nginx因它的稳定性，丰富的功能，示例配置文件和低系统资源的消耗而闻名中国大陆使用Nginx的网站:淘宝，京东，腾讯，百度，新浪，网易…官网http://nginx.org/中文资料http://www.nginx.cn/doc/index.htmlhttp://tengine.taobao.org/book/为什么选择Nginx作为We服务器：相比Apache，Nginx使用资源更少，支持更多的并发连接，体现更高的效率，使Nginx倍受欢迎，能够支持高达50000个并发连接数的响应作为负载均衡服务器：Nginx既可以在内部直接支持Redis和PHP，也可以支持作为HTTP代理服务器对外进行服务，Nginx使用C编写，不论是系统资源开销还是CPU使用效率都处理的非常优秀Nginx安装非常简单，配置文件非常简洁，Bug非常少：Nginx启动非常容易，并且几乎可以做到7 * 24小时不间断运行，即使运行数个月也不需要重新启动#Nginx安装Nginx安装主要有两种方式方法一、通过操作系统的包管理器进行安装：https://www.jianshu.com/p/96691511295f方法二、在官方网站下载源代码，编译安装：https://www.jianshu.com/p/96691511295f启动Nginxnginx [ -c configpath]信息查看nginx -vnginx -V控制Nginxnginx -s signalstop 快速关闭quit 优雅的关闭reload 重新加载配置通过系统管理systemctl status nginx 查看nginx状态systemctl start nginx 启动nginx服务systemctl stop nginx 关闭nginx服务systemctl enable nginx 设置开机自启systemctl disable nginx 禁止开机自启​#Nginx配置文件Nginx配置文件包含指定指令控制的模块。指令分为简单指令和块指令一个简单指令由名称和参数组成，以空格分隔，并以分号结尾一个块指令和简单指令具有相同的结构，但不是以分号结束，而是以一个大括号包围的一堆附 加指令结束如果一个大括号内可以有其他的指令，它就被称为一个上下文，比如（events，http，server，location）指令nginx -t 不运行，仅测试配置文件nginx -c configpath 从指定路径加载配置文件nginx -t -c configpath 测试指定配置文件1234567891011121314151617main 全局设置events&#123; 工作模式，连接配置 ...&#125;http&#123; http的配置 ... upstream xxx&#123; 负载均衡配置 ... &#125; server&#123; 主机设置 ... location xxx&#123; URL匹配 ... &#125; &#125;&#125;12345678#mainuser nginx; worker进程运行的用户和组worker_processes 1; 指定Nginx开启的子进程数，多核CPU建议设置和CPU数量一样的进程数error_log xxx level; 用来定义全局错误日志文件，通常放在var中，level有 debug，info，notice， warn，error，critpid xxx; 指定进程id的存储文件位置123456789101112131415161718#events指定工作模式和以及连接上限events&#123; use epoll; worker_connections 1024;&#125;use 指定nginx工作模式 epoll 高效工作模式，linux kqueue 高效工作模式， bsd poll 标准模式 select 标准模式worker_connections 定义nginx每个进程的最大连接数 正向代理 连接数 * 进程数 反向代理 连接数 * 进程数 / 4 linux系统限制最多能同时打开65535个文件，默认上限就是65535，可解除 ulimit -n 6553512345678910111213141516#http最核心的模块，主要负责http服务器相关配置，包含server，upstream子模块include mime.types;设置文件的mime类型include xxxconfig; 包含其它配置文件，分开规划解耦default_type xxx; 设置默认类型为二进制流，文件类型未知时就会使用默认log_format 设置日志格式sendfile 设置高效文件传输模式keepalive_timeout 设置客户端连接活跃超时gzip gzip压缩123456789101112131415161718#server用来指定虚拟主机listen 80; 指定虚拟主机监听的端口server_name localhost; 指定ip地址或域名，多个域名使用空格隔开charset utf-8; 指定网页的默认编码格式error_page 500 502 /50x.html 指定错误页面access_log xxx main; 指定虚拟主机的访问日志存放路径error_log xxx main; 指定虚拟主机的错误日志存放路径root xxx; 指定这个虚拟主机的根目录index xxx; 指定默认首页123456789101112131415161718#localtion核心中的核心，以后的主要配置都在这主要功能:定位url，解析url，支持正则匹配，还能支持条件，实现动静分离语法 location [modifier] uri&#123; ... &#125;modifier 修饰符 = 使用精确匹配并且终止搜索 ~ 区分大小写的正则表达式 ~* 不区分大小写的正则表达式 ^~ 最佳匹配，不是正则匹配，通常用来匹配目录 常用指令 alias 别名，定义location的其他名字，在文件系统中能够找到，如果location指定了正则表达式，alias将会引用正则表达式中的捕获，alias替代lication中匹配的部分，没有匹配的部分将会在文件系统中搜索123456789101112#反向代理proxy_pass URL; 反向代理转发地址，默认不转发header，需要转发header则设置 proxy_set_header HOST $host;proxy_method POST; 转发的方法名proxy_hide_header Cache-Control; 指定头部不被转发 proxy_pass_header Cache-Control; 设置哪些头部转发proxy_pass_request_header on; 设置转发http请求头proxy_pass_request_body on; 设置转发请求体1234567891011121314151617#upstream负载均衡模块，通过一个简单的调度算法来实现客户ip到后端服务器的负载平衡写法 upstream myproject&#123; ip_hash; server 127.0.0.1:8000; server 127.0.0.1:8001 down; server 127.0.0.1:8002 weight=3; server 127.0.0.1:8003 backup； fair； &#125;负载均衡算法 weight 负载权重 down 当前server不参与负载均衡 backup 其它机器全down掉或满载使用此服务 ip_hash 按每个请求的hash结果分配 fair 按后端响应时间来分（第三方的）]]></content>
+      <categories>
+        <category>Nginx</category>
+      </categories>
+      <tags>
+        <tag>Nginx</tag>
       </tags>
   </entry>
   <entry>
@@ -132,8 +132,8 @@
         <category>Django</category>
       </categories>
       <tags>
-        <tag>django</tag>
         <tag>python</tag>
+        <tag>django</tag>
         <tag>mysql</tag>
       </tags>
   </entry>
@@ -147,6 +147,17 @@
       <tags>
         <tag>Hexo</tag>
         <tag>Next</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Git常用命令]]></title>
+    <url>%2Flinchao1002.github.io%2F2018%2F01%2F22%2FGit%E5%A4%A7%E5%85%A8%2F</url>
+    <content type="text"><![CDATA[Git大全推荐一款工具：SourcetreeSourcetree简化了您与Git存储库交互的方式，因此您可以专注于编码。通过Sourcetree的简单Git GUI可视化和管理您的存储库。 https://www.sourcetreeapp.com/git config配置 Git 的相关参数。Git 一共有3个配置文件：\1. 仓库级的配置文件：在仓库的 .git/.gitconfig，该配置文件只对所在的仓库有效。\2. 全局配置文件：Mac 系统在 ~/.gitconfig，Windows 系统在 C:\Users\&lt;用户名&gt;\.gitconfig。\3. 系统级的配置文件：在 Git 的安装目录下（Mac 系统下安装目录在 /usr/local/git）的 etc 文件夹中的 gitconfig。123456789101112131415161718192021222324252627282930313233343536373839404142# 查看配置信息# --local：仓库级，--global：全局级，--system：系统级$ git config &lt;--local | --global | --system&gt; -l# 查看当前生效的配置信息$ git config -l# 编辑配置文件# --local：仓库级，--global：全局级，--system：系统级$ git config &lt;--local | --global | --system&gt; -e# 添加配置项# --local：仓库级，--global：全局级，--system：系统级$ git config &lt;--local | --global | --system&gt; --add &lt;name&gt; &lt;value&gt;# 获取配置项$ git config &lt;--local | --global | --system&gt; --get &lt;name&gt;# 删除配置项$ git config &lt;--local | --global | --system&gt; --unset &lt;name&gt;# 配置提交记录中的用户信息$ git config --global user.name &lt;用户名&gt;$ git config --global user.email &lt;邮箱地址&gt;# 更改Git缓存区的大小# 如果提交的内容较大，默认缓存较小，提交会失败# 缓存大小单位：B，例如：524288000（500MB）$ git config --global http.postBuffer &lt;缓存大小&gt;# 调用 git status/git diff 命令时以高亮或彩色方式显示改动状态$ git config --global color.ui true# 配置可以缓存密码，默认缓存时间15分钟$ git config --global credential.helper cache# 配置密码的缓存时间# 缓存时间单位：秒$ git config --global credential.helper 'cache --timeout=&lt;缓存时间&gt;'# 配置长期存储密码$ git config --global credential.helper storegit clone从远程仓库克隆一个版本库到本地。12345678# 默认在当前目录下创建和版本库名相同的文件夹并下载版本到该文件夹下$ git clone &lt;远程仓库的网址&gt;# 指定本地仓库的目录$ git clone &lt;远程仓库的网址&gt; &lt;本地目录&gt;# -b 指定要克隆的分支，默认是master分支$ git clone &lt;远程仓库的网址&gt; -b &lt;分支名称&gt; &lt;本地目录&gt;git init初始化项目所在目录，初始化后会在当前目录下出现一个名为 .git 的目录。12# 初始化本地仓库，在当前目录下生成 .git 文件夹$ git initgit status查看本地仓库的状态。1234567# 查看本地仓库的状态$ git status# 以简短模式查看本地仓库的状态# 会显示两列，第一列是文件的状态，第二列是对应的文件# 文件状态：A 新增，M 修改，D 删除，?? 未添加到Git中$ git status -sgit remote操作远程库。123456789101112131415161718# 列出已经存在的远程仓库$ git remote# 列出远程仓库的详细信息，在别名后面列出URL地址$ git remote -v$ git remote --verbose# 添加远程仓库$ git remote add &lt;远程仓库的别名&gt; &lt;远程仓库的URL地址&gt;# 修改远程仓库的别名$ git remote rename &lt;原远程仓库的别名&gt; &lt;新的别名&gt;# 删除指定名称的远程仓库$ git remote remove &lt;远程仓库的别名&gt;# 修改远程仓库的 URL 地址$ git remote set-url &lt;远程仓库的别名&gt; &lt;新的远程仓库URL地址&gt;git branch操作 Git 的分支命令。1234567891011121314151617181920# 列出本地的所有分支，当前所在分支以 "*" 标出$ git branch# 列出本地的所有分支并显示最后一次提交，当前所在分支以 "*" 标出$ git branch -v# 创建新分支，新的分支基于上一次提交建立$ git branch &lt;分支名&gt;# 修改分支名称# 如果不指定原分支名称则为当前所在分支$ git branch -m [&lt;原分支名称&gt;] &lt;新的分支名称&gt;# 强制修改分支名称$ git branch -M [&lt;原分支名称&gt;] &lt;新的分支名称&gt;# 删除指定的本地分支$ git branch -d &lt;分支名称&gt;# 强制删除指定的本地分支$ git branch -D &lt;分支名称&gt;git checkout检出命令，用于创建、切换分支等。123456789101112# 切换到已存在的指定分支$ git checkout &lt;分支名称&gt;# 创建并切换到指定的分支，保留所有的提交记录# 等同于 "git branch" 和 "git checkout" 两个命令合并$ git checkout -b &lt;分支名称&gt;# 创建并切换到指定的分支，删除所有的提交记录$ git checkout --orphan &lt;分支名称&gt;# 替换掉本地的改动，新增的文件和已经添加到暂存区的内容不受影响$ git checkout &lt;文件路径&gt;git cherry-pick把已经提交的记录合并到当前分支。12# 把已经提交的记录合并到当前分支$ git cherry-pick &lt;commit ID&gt;git add把要提交的文件的信息添加到暂存区中。当使用 git commit 时，将依据暂存区中的内容来进行文件的提交。1234567891011121314# 把指定的文件添加到暂存区中$ git add &lt;文件路径&gt;# 添加所有修改、已删除的文件到暂存区中$ git add -u [&lt;文件路径&gt;]$ git add --update [&lt;文件路径&gt;]# 添加所有修改、已删除、新增的文件到暂存区中，省略 &lt;文件路径&gt; 即为当前目录$ git add -A [&lt;文件路径&gt;]$ git add --all [&lt;文件路径&gt;]# 查看所有修改、已删除但没有提交的文件，进入一个子命令系统$ git add -i [&lt;文件路径&gt;]$ git add --interactive [&lt;文件路径&gt;]git commit将暂存区中的文件提交到本地仓库中。123456789101112# 把暂存区中的文件提交到本地仓库，调用文本编辑器输入该次提交的描述信息$ git commit# 把暂存区中的文件提交到本地仓库中并添加描述信息$ git commit -m "&lt;提交的描述信息&gt;"# 把所有修改、已删除的文件提交到本地仓库中# 不包括未被版本库跟踪的文件，等同于先调用了 "git add -u"$ git commit -a -m "&lt;提交的描述信息&gt;"# 修改上次提交的描述信息$ git commit --amendgit fetch从远程仓库获取最新的版本到本地的 tmp 分支上。12345# 将远程仓库所有分支的最新版本全部取回到本地$ git fetch &lt;远程仓库的别名&gt;# 将远程仓库指定分支的最新版本取回到本地$ git fetch &lt;远程主机名&gt; &lt;分支名&gt;git merge合并分支。12# 把指定的分支合并到当前所在的分支下$ git merge &lt;分支名称&gt;git diff比较版本之间的差异。123456789101112131415161718# 比较当前文件和暂存区中文件的差异，显示没有暂存起来的更改$ git diff# 比较暂存区中的文件和上次提交时的差异$ git diff --cached$ git diff --staged# 比较当前文件和上次提交时的差异$ git diff HEAD# 查看从指定的版本之后改动的内容$ git diff &lt;commit ID&gt;# 比较两个分支之间的差异$ git diff &lt;分支名称&gt; &lt;分支名称&gt;# 查看两个分支分开后各自的改动内容$ git diff &lt;分支名称&gt;...&lt;分支名称&gt;git pull从远程仓库获取最新版本并合并到本地。首先会执行 git fetch，然后执行 git merge，把获取的分支的 HEAD 合并到当前分支。12# 从远程仓库获取最新版本。$ git pullgit push把本地仓库的提交推送到远程仓库。123456# 把本地仓库的分支推送到远程仓库的指定分支$ git push &lt;远程仓库的别名&gt; &lt;本地分支名&gt;:&lt;远程分支名&gt;# 删除指定的远程仓库的分支$ git push &lt;远程仓库的别名&gt; :&lt;远程分支名&gt;$ git push &lt;远程仓库的别名&gt; --delete &lt;远程分支名&gt;git log显示提交的记录。12345678# 打印所有的提交记录$ git log# 打印从第一次提交到指定的提交的记录$ git log &lt;commit ID&gt;# 打印指定数量的最新提交的记录$ git log -&lt;指定的数量&gt;git reset还原提交记录。12345678910111213141516# 重置暂存区，但文件不受影响# 相当于将用 "git add" 命令更新到暂存区的内容撤出暂存区，可以指定文件# 没有指定 commit ID 则默认为当前 HEAD$ git reset [&lt;文件路径&gt;]$ git reset --mixed [&lt;文件路径&gt;]# 将 HEAD 的指向改变，撤销到指定的提交记录，文件未修改$ git reset &lt;commit ID&gt;$ git reset --mixed &lt;commit ID&gt;# 将 HEAD 的指向改变，撤销到指定的提交记录，文件未修改# 相当于调用 "git reset --mixed" 命令后又做了一次 "git add"$ git reset --soft &lt;commit ID&gt;# 将 HEAD 的指向改变，撤销到指定的提交记录，文件也修改了$ git reset --hard &lt;commit ID&gt;git revert生成一个新的提交来撤销某次提交，此次提交之前的所有提交都会被保留。12# 生成一个新的提交来撤销某次提交$ git revert &lt;commit ID&gt;git tag操作标签的命令。1234567891011121314151617181920212223# 打印所有的标签$ git tag# 添加轻量标签，指向提交对象的引用，可以指定之前的提交记录$ git tag &lt;标签名称&gt; [&lt;commit ID&gt;]# 添加带有描述信息的附注标签，可以指定之前的提交记录$ git tag -a &lt;标签名称&gt; -m &lt;标签描述信息&gt; [&lt;commit ID&gt;]# 切换到指定的标签$ git checkout &lt;标签名称&gt;# 查看标签的信息$ git show &lt;标签名称&gt;# 删除指定的标签$ git tag -d &lt;标签名称&gt;# 将指定的标签提交到远程仓库$ git push &lt;远程仓库的别名&gt; &lt;标签名称&gt;# 将本地所有的标签全部提交到远程仓库$ git push &lt;远程仓库的别名&gt; –tagsgit mv重命名文件或者文件夹。12# 重命名指定的文件或者文件夹$ git mv &lt;源文件/文件夹&gt; &lt;目标文件/文件夹&gt;git rm删除文件或者文件夹。12345678# 移除跟踪指定的文件，并从本地仓库的文件夹中删除$ git rm &lt;文件路径&gt;# 移除跟踪指定的文件夹，并从本地仓库的文件夹中删除$ git rm -r &lt;文件夹路径&gt;# 移除跟踪指定的文件，在本地仓库的文件夹中保留该文件$ git rm --cachedGit操作场景示例1. 删除掉本地不存在的远程分支多人合作开发时，如果远程的分支被其他开发删除掉，在本地执行 git branch --all 依然会显示该远程分支，可使用下列的命令进行删除：123456# 使用 pull 命令，添加 -p 参数$ git pull -p# 等同于下面的命令$ git fetch -p$ git fetch --prune origin]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -220,6 +231,11 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[About]]></title>
+    <url>%2Flinchao1002.github.io%2Fabout%2Findex.html</url>
+    <content type="text"><![CDATA[简介：星座：天秤座/Boy邮箱: linchao1002@qq.com歡迎收藏本站，下面留言會盡可能答復 (右下角可以实时联系哦，方便尽快回复你)]]></content>
+  </entry>
+  <entry>
     <title><![CDATA[categories]]></title>
     <url>%2Flinchao1002.github.io%2Fcategories%2Findex.html</url>
     <content type="text"><![CDATA[]]></content>
@@ -228,10 +244,5 @@
     <title><![CDATA[tags]]></title>
     <url>%2Flinchao1002.github.io%2Ftags%2Findex.html</url>
     <content type="text"><![CDATA[]]></content>
-  </entry>
-  <entry>
-    <title><![CDATA[About]]></title>
-    <url>%2Flinchao1002.github.io%2Fabout%2Findex.html</url>
-    <content type="text"><![CDATA[简介：星座：天秤座/Boy邮箱: linchao1002@qq.com歡迎收藏本站，下面留言會盡可能答復 (右下角可以实时联系哦，方便尽快回复你)]]></content>
   </entry>
 </search>
