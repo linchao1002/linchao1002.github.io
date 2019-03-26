@@ -65,6 +65,19 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[项目部署上线指南]]></title>
+    <url>%2Flinchao1002.github.io%2F2018%2F11%2F22%2F%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E4%B8%8A%E7%BA%BF%E6%8C%87%E5%8D%97%2F</url>
+    <content type="text"><![CDATA[]]></content>
+      <categories>
+        <category>Django</category>
+      </categories>
+      <tags>
+        <tag>django</tag>
+        <tag>python</tag>
+        <tag>nginx</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[hexo网站时间修改]]></title>
     <url>%2Flinchao1002.github.io%2F2018%2F08%2F23%2Fhexo%E7%BD%91%E7%AB%99%E6%97%B6%E9%97%B4%E4%BF%AE%E6%94%B9%2F</url>
     <content type="text"><![CDATA[HEXO 网站时间修改网站建立时间​ 这个时间将在站点的底部显示，例如 © 2017 - 2018。 编辑 主题配置文件，_config.yml搜索 since​ 修改参数即可网站已运行时间编辑主题源文件./themes/layout/_parrials/footer.swing找到以下代码区块1234&#123;% if theme.footer.theme.enable %&#125;/* ... */&#123;% endif %&#125;HLJS | COPY在 &lt;/div&gt; 之前添加123&lt;span&gt; | &lt;/span&gt;&lt;span id="showDays"&gt;&lt;/span&gt;LANG-HTML | COPY在该文件末尾处添加12345678910111213141516171819202122232425&lt;script&gt; var seconds = 1000; var minutes = seconds * 60; var hours = minutes * 60; var days = hours * 24; var years = days * 365; var birthDay = Date.UTC(2016,07,30,00,00,00); // 这里设置建站时间 setInterval(function() &#123; var today = new Date(); var todayYear = today.getFullYear(); var todayMonth = today.getMonth()+1; var todayDate = today.getDate(); var todayHour = today.getHours(); var todayMinute = today.getMinutes(); var todaySecond = today.getSeconds(); var now = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond); var diff = now - birthDay; var diffYears = Math.floor(diff/years); var diffDays = Math.floor((diff/days)-diffYears*365); var diffHours = Math.floor((diff-(diffYears*365+diffDays)*days)/hours); var diffMinutes = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours)/minutes); var diffSeconds = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours-diffMinutes*minutes)/seconds); document.getElementById('showDays').innerHTML="本站已运行 "+diffYears+" 年 "+diffDays+" 天 "+diffHours+" 小时 "+diffMinutes+" 分钟 "+diffSeconds+" 秒"; &#125;, 1000);&lt;/script&gt;]]></content>
@@ -132,8 +145,8 @@
         <category>Django</category>
       </categories>
       <tags>
-        <tag>python</tag>
         <tag>django</tag>
+        <tag>python</tag>
         <tag>mysql</tag>
       </tags>
   </entry>
