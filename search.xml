@@ -186,6 +186,17 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[redis常用配置参数]]></title>
+    <url>%2Flinchao1002.github.io%2F2018%2F02%2F11%2Fredis%2F</url>
+    <content type="text"><![CDATA[参考文档： http://www.cnblogs.com/huangjacky/p/3700473.html1 #引用其他配置文件2 # include /path/to/local.conf34 #是否daemon运行no,yes(守护进程)5 daemonize no67 #pid文件的位置8 pidfile /tmp/redis.pid910 #开放的端口号11 port 63791213 #listen队列的长度14 tcp-backlog 5111516 #绑定ip地址，多个ip用空格分隔17 bind 127.0.0.11819 #我没有用到20 # unixsocket /tmp/redis.sock21 # unixsocketperm 7552223 #客户端空闲多少s后踢掉，0禁止24 timeout 02526 #检测挂掉的连接，单位s，0禁止27 tcp-keepalive 02829 #日志的等级，debug,verbose,notice,warning30 loglevel notice3132 #log文件的路径，为空的话直接显示在终端33 logfile “”3435 #是否使用系统logger，一直没有用过。36 # syslog-enabled no/37 # syslog-ident redis38 # syslog-facility local03940 #redis中有多少个数据库，默认即可41 databases 164243 ################################ SNAPSHOTTING （快照持久化配置） ################################44 #将redis内存数据序列化到磁盘的时间和频率45 #900s有1个key改变就会序列化，其他的读者可以自己看下46 save 900 147 save 300 1048 save 60 100004950 #序列化的时候是否停止写操作51 stop-writes-on-bgsave-error yes5253 #序列化的数据是否压缩54 rdbcompression yes5556 #序列化的数据是否校验其完整性57 rdbchecksum yes5859 #序列化的文件名，只是文件不能带目录60 dbfilename redis.rdb6162 #序列化文件的目录63 dir /tmp6465 ################################# REPLICATION （主从同步配置）#################################66 #以下是主从备份，我还没有使用到67 #指定master ip和port，标明自己是个从库68 #slaveof6970 #如果master配置了密码的话，此处也需做设置；71 # masterauth7273 #当slave丢失与master端的连接，或者复制仍在处理，那么slave会有下列两种表现：默认值yes。74 #当本参数值为yes时，slave继续响应客户端请求，尽管数据已不同步甚至没有数据(出现在初次同步的情况下)；75 #当本参数值为no时，slave会返回”SYNC with master in progreee”的错误信息；76 slave-serve-stale-data yes7778 #默认从Redis是只读模式79 slave-read-only yes8081 #repl-diskless-sync no82 #repl-diskless-sync-delay 58384 #默认值10，指定slave定期ping master的周期85 # repl-ping-slave-period 108687 #默认值60，指定超时时间。注意本参数包括批量传输数据和ping响应的时间。88 # repl-timeout 608990 repl-disable-tcp-nodelay no91 # repl-backlog-size 1mb92 # repl-backlog-ttl 360093 slave-priority 10094 # min-slaves-to-write 395 # min-slaves-max-lag 10969798 ################################## SECURITY （安全配置） ###################################99 #客户端连接的密码100 requirepass hello101102 #不清楚是什么功能，没用过103 # rename-command CONFIG “”104105106 ################################### LIMITS ####################################107 #指定客户端的最大并发连接数，默认是没有限制，直到redis无法创建新的进程为止，108 #设置该参数值为0也表示不限制，如果该参数指定了值，当并发连接达到指定值时，redis会关闭所有新连接，109 #并返回’max number of clients reached’的错误信息；110 # maxclients 10000111112 #设置redis最大可使用内存。当达到最大内存后，redis会尝试按照设置的回收策略删除键值。113 #如果无法删除键值，或者保留策略设置为不清除，那么redis就会向发出内存的请求返回错误信息。当把redis做为一级LRU的缓存时本参数较为有用。114 # maxmemory115116 #内存替换算法117 #默认值volatile-lru，指定清除策略，有下列几种方法：118 #volatile-lru -&gt; remove the key with an expire set using an LRU algorithm119 #allkeys-lru -&gt; remove any key accordingly to the LRU algorithm120 #volatile-random -&gt; remove a random key with an expire set121 #allkeys-&gt;random -&gt; remove a random key, any key122 #volatile-ttl -&gt; remove the key with the nearest expire time (minor TTL)123 #noeviction -&gt; don’t expire at all, just return an error on write operations124 # maxmemory-policy volatile-lru125126 # maxmemory-samples 3127128129 ############################## APPEND ONLY MODE （直写盘模式） ###############################130 #ONLY模式的设置，默认情况下redis采用异步方式dump数据到磁盘上，极端情况下这可能会导致丢失部分数据(比如服务器突然宕机)，131 #如果数据比较重要，不希望丢失，可以启用直写的模式，这种模式下redis会将所有接收到的写操作同步到appendonly.aof文件中，132 #该文件会在redis服务启动时在内存中重建所有数据。注意这种模式对性能影响非常之大。133 appendonly no ##默认值no，指定是否启用直写模式；134135 #直写模式的默认文件名appendonly.aof136 # appendfilename appendonly.aof137138 #appendfsync：调用fsync()方式让操作系统写数据到磁盘上，数据同步方式，有下列几种模式：139 # always：每次都调用，比如安全，但速度最慢；140 # everysec：每秒同步，这也是默认方式；141 # no：不调用fsync，由操作系统决定何时同步，比如快的模式；142 # no-appendfsync-on-rewrite：默认值no。当AOF fsync策略设置为always或everysec，后台保存进程会执行大量的I/O操作。某些linux配置下redis可能会阻塞过多的fsync()调用。143 # auto-aof-rewrite-percentage：默认值100144 # auto-aof-rewrite-min-size：默认值64mb145 # appendfsync always146 # appendfsync everysec147 # appendfsync no148149 ############################### ADVANCED CONFIG ( 高级配置 ) ###############################150 #当某个map的元素个数达到最大值，但是其中最大元素的长度没有达到设定阀值时，151 #其HASH的编码采用一种特殊的方式(更有效利用内存)。本参数与下面的参数组合使用来设置这两项阀值。设置元素个数；152 hash-max-zipmap-entries：默认值512，153 hash-max-zipmap-value：默认值64，154155 #与hash类似，满足条件的list数组也会采用特殊的方式以节省空间。156 list-max-ziplist-entries：默认值512，157 list-max-ziplist-value：默认值64158159 #当set类型中的数据都是数值类型，并且set中整型元素的数量不超过指定值时，使用特殊的编码方式。160 set-max-intset-entries：默认值512，161162 #与hash和list类似。163 zset-max-ziplist-entries：默认值128，164 zset-max-ziplist-value：默认值64165166 #控制是否自动重建hash。Active rehashing每100微秒使用1微秒cpu时间排序，以重组Redis的hash表。167 #重建是通过一种lazy方式，写入hash表的操作越多，需要执行rehashing的步骤也越多，如果服务器当前空闲，168 #那么rehashing操作会一直执行。如果对实时性要求较高，难以接受redis时不时出现的2微秒的延迟，则可以设置activerehashing为no，169 #否则建议设置为yes，以节省内存空间。170 activerehashing：默认值yes171172173 ############################### CLUSTER CONFIG （集群配置）###############################174 #是否开启集群功能175 # cluster-enabled yes176177 #集群的节点配置文件178 # cluster-config-file nodes.conf179180 #节点的超时时间181 # cluster-node-timeout 15000182183 # cluster-slave-validity-factor 10184185 # cluster-migration-barrier 1186187 # cluster-require-full-coverage yes`]]></content>
+      <categories>
+        <category>redis</category>
+      </categories>
+      <tags>
+        <tag>redis</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Next主题个性化之自动更换背景图片]]></title>
     <url>%2Flinchao1002.github.io%2F2018%2F01%2F25%2FNext%E4%B8%BB%E9%A2%98%E4%B8%AA%E6%80%A7%E5%8C%96%E4%B9%8B%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%8D%A2%E8%83%8C%E6%99%AF%E5%9B%BE%E7%89%87%2F</url>
     <content type="text"><![CDATA[Next主题个性化之自动更换背景图片如果觉得next的空白主题看腻了或者太多人用觉得不够个性化，那么不妨试试自动更新背景图片（简单且酷）。实现的原理：调用了网站的接口。自动更换背景的实现是修改添加背景的css样式实现。图片来源是 ：https://source.unsplash.com/这个网站，里面不仅免费提供了很多高清美图，而且还提供api接口调用，实在是良心。1 .修改背景样式修改themes\next\source\css\ _custom\custom.styl文件，这个是Next故意留给用户自己个性化定制一些样式的文件，添加以下代码：body {background:url(https://source.unsplash.com/random/1600x900);background-repeat: no-repeat;background-attachment:fixed;background-position:50% 50%;}如果自己不喜欢这个网址提供的图片做背景，那么修改url()里面的路径即可。repeat、attachment、position就是调整图片的位置，不重复出现、不滚动等等。2.修改不透明度完成这一步其实背景就会自动更换了，但是会出现一个问题，因为next主题的背景是纯透明的，这样子就造成背景图片的影响看不见文字，这对于博客来说肯定不行。那么就需要调整背景的不透明度了。同样是修改themes\next\source\css\ _custom\custom.styl文件。在后面添加如下代码body {background:url(https://source.unsplash.com/random/1600x900);background-repeat: no-repeat;background-attachment:fixed;background-position:50% 50%;}.content-wrap {opacity: 0.86;}(实际需要根据选择的主题来添加)然后 hexo clean hexo g hexo d 便可以实现了参考链接：https://blog.csdn.net/mango_haoming/article/details/78473243]]></content>
@@ -314,6 +325,11 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[About]]></title>
+    <url>%2Flinchao1002.github.io%2Fabout%2Findex.html</url>
+    <content type="text"><![CDATA[简介：星座：天秤座/Boy邮箱: linchao1002@qq.com歡迎收藏本站，下面留言會盡可能答復 (右下角可以实时联系哦，方便尽快回复你)]]></content>
+  </entry>
+  <entry>
     <title><![CDATA[tags]]></title>
     <url>%2Flinchao1002.github.io%2Ftags%2Findex.html</url>
     <content type="text"><![CDATA[]]></content>
@@ -322,10 +338,5 @@
     <title><![CDATA[categories]]></title>
     <url>%2Flinchao1002.github.io%2Fcategories%2Findex.html</url>
     <content type="text"><![CDATA[]]></content>
-  </entry>
-  <entry>
-    <title><![CDATA[About]]></title>
-    <url>%2Flinchao1002.github.io%2Fabout%2Findex.html</url>
-    <content type="text"><![CDATA[简介：星座：天秤座/Boy邮箱: linchao1002@qq.com歡迎收藏本站，下面留言會盡可能答復 (右下角可以实时联系哦，方便尽快回复你)]]></content>
   </entry>
 </search>
