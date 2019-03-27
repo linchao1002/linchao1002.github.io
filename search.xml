@@ -27,17 +27,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[Nginx大全]]></title>
-    <url>%2Flinchao1002.github.io%2F2019%2F01%2F23%2FNginx%E7%AE%80%E4%BB%8B%2F</url>
-    <content type="text"><![CDATA[Nginx是一个高性能的HTTP和反向代理服务器，也是一个IMAP/POP3/SMTP服务器。Nginx是一款轻量级的Web服务器/反向代理服务器以及电子邮件代理服务器，其特点是占用内存少，并发能力强，在同类型的网页服务器中表现优秀Nginx是由伊戈尔.塞索耶夫开发的，于2004年10月4日公开源码，以类BSD许可证形式发布Nginx因它的稳定性，丰富的功能，示例配置文件和低系统资源的消耗而闻名中国大陆使用Nginx的网站:淘宝，京东，腾讯，百度，新浪，网易…官网http://nginx.org/中文资料http://www.nginx.cn/doc/index.htmlhttp://tengine.taobao.org/book/为什么选择Nginx作为We服务器：相比Apache，Nginx使用资源更少，支持更多的并发连接，体现更高的效率，使Nginx倍受欢迎，能够支持高达50000个并发连接数的响应作为负载均衡服务器：Nginx既可以在内部直接支持Redis和PHP，也可以支持作为HTTP代理服务器对外进行服务，Nginx使用C编写，不论是系统资源开销还是CPU使用效率都处理的非常优秀Nginx安装非常简单，配置文件非常简洁，Bug非常少：Nginx启动非常容易，并且几乎可以做到7 * 24小时不间断运行，即使运行数个月也不需要重新启动#Nginx安装Nginx安装主要有两种方式方法一、通过操作系统的包管理器进行安装：https://www.jianshu.com/p/96691511295f方法二、在官方网站下载源代码，编译安装：https://www.jianshu.com/p/96691511295f启动Nginxnginx [ -c configpath]信息查看nginx -vnginx -V控制Nginxnginx -s signalstop 快速关闭quit 优雅的关闭reload 重新加载配置通过系统管理systemctl status nginx 查看nginx状态systemctl start nginx 启动nginx服务systemctl stop nginx 关闭nginx服务systemctl enable nginx 设置开机自启systemctl disable nginx 禁止开机自启​#Nginx配置文件Nginx配置文件包含指定指令控制的模块。指令分为简单指令和块指令一个简单指令由名称和参数组成，以空格分隔，并以分号结尾一个块指令和简单指令具有相同的结构，但不是以分号结束，而是以一个大括号包围的一堆附 加指令结束如果一个大括号内可以有其他的指令，它就被称为一个上下文，比如（events，http，server，location）指令nginx -t 不运行，仅测试配置文件nginx -c configpath 从指定路径加载配置文件nginx -t -c configpath 测试指定配置文件1234567891011121314151617main 全局设置events&#123; 工作模式，连接配置 ...&#125;http&#123; http的配置 ... upstream xxx&#123; 负载均衡配置 ... &#125; server&#123; 主机设置 ... location xxx&#123; URL匹配 ... &#125; &#125;&#125;12345678#mainuser nginx; worker进程运行的用户和组worker_processes 1; 指定Nginx开启的子进程数，多核CPU建议设置和CPU数量一样的进程数error_log xxx level; 用来定义全局错误日志文件，通常放在var中，level有 debug，info，notice， warn，error，critpid xxx; 指定进程id的存储文件位置123456789101112131415161718#events指定工作模式和以及连接上限events&#123; use epoll; worker_connections 1024;&#125;use 指定nginx工作模式 epoll 高效工作模式，linux kqueue 高效工作模式， bsd poll 标准模式 select 标准模式worker_connections 定义nginx每个进程的最大连接数 正向代理 连接数 * 进程数 反向代理 连接数 * 进程数 / 4 linux系统限制最多能同时打开65535个文件，默认上限就是65535，可解除 ulimit -n 6553512345678910111213141516#http最核心的模块，主要负责http服务器相关配置，包含server，upstream子模块include mime.types;设置文件的mime类型include xxxconfig; 包含其它配置文件，分开规划解耦default_type xxx; 设置默认类型为二进制流，文件类型未知时就会使用默认log_format 设置日志格式sendfile 设置高效文件传输模式keepalive_timeout 设置客户端连接活跃超时gzip gzip压缩123456789101112131415161718#server用来指定虚拟主机listen 80; 指定虚拟主机监听的端口server_name localhost; 指定ip地址或域名，多个域名使用空格隔开charset utf-8; 指定网页的默认编码格式error_page 500 502 /50x.html 指定错误页面access_log xxx main; 指定虚拟主机的访问日志存放路径error_log xxx main; 指定虚拟主机的错误日志存放路径root xxx; 指定这个虚拟主机的根目录index xxx; 指定默认首页123456789101112131415161718#localtion核心中的核心，以后的主要配置都在这主要功能:定位url，解析url，支持正则匹配，还能支持条件，实现动静分离语法 location [modifier] uri&#123; ... &#125;modifier 修饰符 = 使用精确匹配并且终止搜索 ~ 区分大小写的正则表达式 ~* 不区分大小写的正则表达式 ^~ 最佳匹配，不是正则匹配，通常用来匹配目录 常用指令 alias 别名，定义location的其他名字，在文件系统中能够找到，如果location指定了正则表达式，alias将会引用正则表达式中的捕获，alias替代lication中匹配的部分，没有匹配的部分将会在文件系统中搜索123456789101112#反向代理proxy_pass URL; 反向代理转发地址，默认不转发header，需要转发header则设置 proxy_set_header HOST $host;proxy_method POST; 转发的方法名proxy_hide_header Cache-Control; 指定头部不被转发 proxy_pass_header Cache-Control; 设置哪些头部转发proxy_pass_request_header on; 设置转发http请求头proxy_pass_request_body on; 设置转发请求体1234567891011121314151617#upstream负载均衡模块，通过一个简单的调度算法来实现客户ip到后端服务器的负载平衡写法 upstream myproject&#123; ip_hash; server 127.0.0.1:8000; server 127.0.0.1:8001 down; server 127.0.0.1:8002 weight=3; server 127.0.0.1:8003 backup； fair； &#125;负载均衡算法 weight 负载权重 down 当前server不参与负载均衡 backup 其它机器全down掉或满载使用此服务 ip_hash 按每个请求的hash结果分配 fair 按后端响应时间来分（第三方的）]]></content>
-      <categories>
-        <category>Nginx</category>
-      </categories>
-      <tags>
-        <tag>Nginx</tag>
-      </tags>
-  </entry>
-  <entry>
     <title><![CDATA[Next 主题添加站内搜索功能]]></title>
     <url>%2Flinchao1002.github.io%2F2019%2F01%2F23%2FNext%20%E4%B8%BB%E9%A2%98%E6%B7%BB%E5%8A%A0%E7%AB%99%E5%86%85%E6%90%9C%E7%B4%A2%E5%8A%9F%E8%83%BD%2F</url>
     <content type="text"><![CDATA[Next 主题添加站内搜索功能详细请看：https://github.com/wzpan/hexo-generator-search安装 hexo-generator-searchdb, 站点根目录执行以下命令1npm install hexo-generator-searchdb --save编辑 站点配置文件, 新增以下内容到任意位置12345search: path: search.xml field: post format: html limit: 10000编辑 主题配置文件, 启用本地搜索功能123# Local searchlocal_search: enable: true可能出现的问题如果出现点击搜索一直停留在加载状态，可能是文件编码问题，可以在本地测试时访问根目录下 search.xml 文件1localhost:4000/search.xml查看报错信息]]></content>
@@ -47,6 +36,17 @@
       <tags>
         <tag>Hexo</tag>
         <tag>Next</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Nginx大全]]></title>
+    <url>%2Flinchao1002.github.io%2F2019%2F01%2F23%2FNginx%E7%AE%80%E4%BB%8B%2F</url>
+    <content type="text"><![CDATA[Nginx是一个高性能的HTTP和反向代理服务器，也是一个IMAP/POP3/SMTP服务器。Nginx是一款轻量级的Web服务器/反向代理服务器以及电子邮件代理服务器，其特点是占用内存少，并发能力强，在同类型的网页服务器中表现优秀Nginx是由伊戈尔.塞索耶夫开发的，于2004年10月4日公开源码，以类BSD许可证形式发布Nginx因它的稳定性，丰富的功能，示例配置文件和低系统资源的消耗而闻名中国大陆使用Nginx的网站:淘宝，京东，腾讯，百度，新浪，网易…官网http://nginx.org/中文资料http://www.nginx.cn/doc/index.htmlhttp://tengine.taobao.org/book/为什么选择Nginx作为We服务器：相比Apache，Nginx使用资源更少，支持更多的并发连接，体现更高的效率，使Nginx倍受欢迎，能够支持高达50000个并发连接数的响应作为负载均衡服务器：Nginx既可以在内部直接支持Redis和PHP，也可以支持作为HTTP代理服务器对外进行服务，Nginx使用C编写，不论是系统资源开销还是CPU使用效率都处理的非常优秀Nginx安装非常简单，配置文件非常简洁，Bug非常少：Nginx启动非常容易，并且几乎可以做到7 * 24小时不间断运行，即使运行数个月也不需要重新启动#Nginx安装Nginx安装主要有两种方式方法一、通过操作系统的包管理器进行安装：https://www.jianshu.com/p/96691511295f方法二、在官方网站下载源代码，编译安装：https://www.jianshu.com/p/96691511295f启动Nginxnginx [ -c configpath]信息查看nginx -vnginx -V控制Nginxnginx -s signalstop 快速关闭quit 优雅的关闭reload 重新加载配置通过系统管理systemctl status nginx 查看nginx状态systemctl start nginx 启动nginx服务systemctl stop nginx 关闭nginx服务systemctl enable nginx 设置开机自启systemctl disable nginx 禁止开机自启​#Nginx配置文件Nginx配置文件包含指定指令控制的模块。指令分为简单指令和块指令一个简单指令由名称和参数组成，以空格分隔，并以分号结尾一个块指令和简单指令具有相同的结构，但不是以分号结束，而是以一个大括号包围的一堆附 加指令结束如果一个大括号内可以有其他的指令，它就被称为一个上下文，比如（events，http，server，location）指令nginx -t 不运行，仅测试配置文件nginx -c configpath 从指定路径加载配置文件nginx -t -c configpath 测试指定配置文件1234567891011121314151617main 全局设置events&#123; 工作模式，连接配置 ...&#125;http&#123; http的配置 ... upstream xxx&#123; 负载均衡配置 ... &#125; server&#123; 主机设置 ... location xxx&#123; URL匹配 ... &#125; &#125;&#125;12345678#mainuser nginx; worker进程运行的用户和组worker_processes 1; 指定Nginx开启的子进程数，多核CPU建议设置和CPU数量一样的进程数error_log xxx level; 用来定义全局错误日志文件，通常放在var中，level有 debug，info，notice， warn，error，critpid xxx; 指定进程id的存储文件位置123456789101112131415161718#events指定工作模式和以及连接上限events&#123; use epoll; worker_connections 1024;&#125;use 指定nginx工作模式 epoll 高效工作模式，linux kqueue 高效工作模式， bsd poll 标准模式 select 标准模式worker_connections 定义nginx每个进程的最大连接数 正向代理 连接数 * 进程数 反向代理 连接数 * 进程数 / 4 linux系统限制最多能同时打开65535个文件，默认上限就是65535，可解除 ulimit -n 6553512345678910111213141516#http最核心的模块，主要负责http服务器相关配置，包含server，upstream子模块include mime.types;设置文件的mime类型include xxxconfig; 包含其它配置文件，分开规划解耦default_type xxx; 设置默认类型为二进制流，文件类型未知时就会使用默认log_format 设置日志格式sendfile 设置高效文件传输模式keepalive_timeout 设置客户端连接活跃超时gzip gzip压缩123456789101112131415161718#server用来指定虚拟主机listen 80; 指定虚拟主机监听的端口server_name localhost; 指定ip地址或域名，多个域名使用空格隔开charset utf-8; 指定网页的默认编码格式error_page 500 502 /50x.html 指定错误页面access_log xxx main; 指定虚拟主机的访问日志存放路径error_log xxx main; 指定虚拟主机的错误日志存放路径root xxx; 指定这个虚拟主机的根目录index xxx; 指定默认首页123456789101112131415161718#localtion核心中的核心，以后的主要配置都在这主要功能:定位url，解析url，支持正则匹配，还能支持条件，实现动静分离语法 location [modifier] uri&#123; ... &#125;modifier 修饰符 = 使用精确匹配并且终止搜索 ~ 区分大小写的正则表达式 ~* 不区分大小写的正则表达式 ^~ 最佳匹配，不是正则匹配，通常用来匹配目录 常用指令 alias 别名，定义location的其他名字，在文件系统中能够找到，如果location指定了正则表达式，alias将会引用正则表达式中的捕获，alias替代lication中匹配的部分，没有匹配的部分将会在文件系统中搜索123456789101112#反向代理proxy_pass URL; 反向代理转发地址，默认不转发header，需要转发header则设置 proxy_set_header HOST $host;proxy_method POST; 转发的方法名proxy_hide_header Cache-Control; 指定头部不被转发 proxy_pass_header Cache-Control; 设置哪些头部转发proxy_pass_request_header on; 设置转发http请求头proxy_pass_request_body on; 设置转发请求体1234567891011121314151617#upstream负载均衡模块，通过一个简单的调度算法来实现客户ip到后端服务器的负载平衡写法 upstream myproject&#123; ip_hash; server 127.0.0.1:8000; server 127.0.0.1:8001 down; server 127.0.0.1:8002 weight=3; server 127.0.0.1:8003 backup； fair； &#125;负载均衡算法 weight 负载权重 down 当前server不参与负载均衡 backup 其它机器全down掉或满载使用此服务 ip_hash 按每个请求的hash结果分配 fair 按后端响应时间来分（第三方的）]]></content>
+      <categories>
+        <category>Nginx</category>
+      </categories>
+      <tags>
+        <tag>Nginx</tag>
       </tags>
   </entry>
   <entry>
@@ -97,6 +97,19 @@
       </categories>
       <tags>
         <tag>docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Centos7上安装docker]]></title>
+    <url>%2Flinchao1002.github.io%2F2018%2F09%2F18%2FCentos7%E4%B8%8A%E5%AE%89%E8%A3%85docker%2F</url>
+    <content type="text"><![CDATA[Centos7上安装dockerDocker从1.13版本之后采用时间线的方式作为版本号，分为社区版CE和企业版EE。社区版是免费提供给个人开发者和小型团体使用的，企业版会提供额外的收费服务，比如经过官方测试认证过的基础设施、容器、插件等。社区版按照stable和edge两种方式发布，每个季度更新stable版本，如17.06，17.09；每个月份更新edge版本，如17.09，17.10。##一、安装docker1、Docker 要求 CentOS 系统的内核版本高于 3.10 ，查看本页面的前提条件来验证你的CentOS 版本是否支持 Docker 。通过 uname -r 命令查看你当前的内核版本$ uname -r2、使用 root 权限登录 Centos。确保 yum 包更新到最新。$ sudo yum update3、卸载旧版本(如果安装过旧版本的话)$ sudo yum remove docker docker-common docker-selinux docker-engine4、安装需要的软件包， yum-util 提供yum-config-manager功能，另外两个是devicemapper驱动依赖的$ sudo yum install -y yum-utils device-mapper-persistent-data lvm25、设置yum源$ sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo6、可以查看所有仓库中所有docker版本，并选择特定版本安装$ yum list docker-ce --showduplicates | sort -r7、安装docker$ sudo yum install docker-ce #由于repo中默认只开启stable仓库，故这里安装的是最新稳定版17.12.0$ sudo yum install &lt;FQPN&gt; # 例如：sudo yum install docker-ce-17.12.0.ce8、启动并加入开机启动$ sudo systemctl start docker$ sudo systemctl enable docker9、验证安装是否成功(有client和service两部分表示docker安装启动都成功了)$ docker version]]></content>
+      <categories>
+        <category>Docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>Linux</tag>
+        <tag>centos</tag>
       </tags>
   </entry>
   <entry>
@@ -207,6 +220,30 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[django-redis缓存]]></title>
+    <url>%2Flinchao1002.github.io%2F2017%2F05%2F22%2F%E5%AE%89%E8%A3%85django_redis%2F</url>
+    <content type="text"><![CDATA[安装django_redis1pip install django_redisdjango 项目settings.py 文件设置123456789CACHES = &#123; 'default': &#123; 'BACKEND': 'django_redis.cache.RedisCache', 'LOCATION': 'redis://127.0.0.1:6379/2', "OPTIONS": &#123; "CLIENT_CLASS": "django_redis.client.DefaultClient", &#125;, &#125;,&#125;然后开启redis，有两种方式启用django的cache，站点缓存1234MIDDLEWARE = [ # 站点缓存 # 'django.middleware.cach//e.UpdateCacheMiddleware', ***页面缓存12345from django.views.decorators.cache import cache_page@cache_page(60)def search(request): maxLength = 9 if request.met以上都是用django的cache的shortcut实现的通过手动cache，具有更大的灵活性123456789101112from django.core.cache import cache def visited_user(request): key='visited' if cache.has_key(key): data = cache.get(key) else: data = get_data() cache.set(key,data,60*60) return datadef get_data() data = Movie.objects.all() return data为visited_user视图配好路由url, 再写好前端页面即可访问但是这个我这个例子不灵活，后期的话可以用celery做后台任务，定时给某些特定模块加载缓存，以提高访问速度]]></content>
+      <categories>
+        <category>redis</category>
+      </categories>
+      <tags>
+        <tag>django</tag>
+        <tag>redis</tag>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[redis设置密码登录]]></title>
+    <url>%2Flinchao1002.github.io%2F2017%2F05%2F12%2FRedis%20%E8%AE%BE%E7%BD%AE%E5%AF%86%E7%A0%81%E7%99%BB%E9%99%86%2F</url>
+    <content type="text"><![CDATA[一、Redis 设置密码登陆1、默认Redis是没有密码登陆1234567 //本机登录 [root@iZrj98p4hhys0y9fdxmcy4Z yanmin]# redis-cli redis 127.0.0.1:6379&gt; //远程登陆 caiwenhua-d1:notes yanmin$ redis-cli -h 47.88.76.55 -p 637947.88.76.55:6379&gt;远程登陆前提：开启了远程登陆设置2、设置Redis密码登陆A、yum安装redis默认配置文件位置/etc/redis.conf,源码安装一般位置/etc/reids/redis.conf,如果都找不到，可以通过find / -name redis.conf查找123456//默认配置#requirepass foobared //修改配置去掉前面#，并且把foobared修改想要设置的密码，比如：123456requirepass 1234563、Redis重启12345//yum安装启动方式service redis restart//源码安装启动方式redis-server /etc/redis/redis.conf &amp;4、Redis 密码登陆A、默认启动方式12345//本机[root@iZrj98p4hhys0y9fdxmcy4Z yanmin]# redis-cli -h 127.0.0.1 -p 6379redis 127.0.0.1:6379&gt; get name(error) ERR operation not permittedredis 127.0.0.1:6379&gt;B、指定密码方式登陆,成功启动redis123[root@iZrj98p4hhys0y9fdxmcy4Z yanmin]# redis-cli -h 127.0.0.1 -p 6379 -a 123456redis 127.0.0.1:6379&gt; get name"yanmin"C、除了在登录时通过-a参数制定密码外，还可以登录时不指定密码，而在执行操作前进行认证auth password。12345678[root@iZrj98p4hhys0y9fdxmcy4Z yanmin]# redis-cli -h 127.0.0.1 -p 6379 redis 127.0.0.1:6379&gt; get name (error) ERR operation not permitted redis 127.0.0.1:6379&gt; auth 123456 OK redis 127.0.0.1:6379&gt; get name "yanmin" redis 127.0.0.1:6379&gt;5、通过命令修改配置A、登陆redis服务12[root@iZrj98p4hhys0y9fdxmcy4Z yanmin]# redis-cli -h 127.0.0.1 -p 6379 -a 123456redis 127.0.0.1:6379&gt;B、修改redis密码12redis 127.0.0.1:6379&gt; config set requirepass yanminOKC、使用新密码登陆，无需重启Redis123[root@iZrj98p4hhys0y9fdxmcy4Z yanmin]# redis-cli -h 127.0.0.1 -p 6379 -a yanminredis 127.0.0.1:6379&gt; get name"yanmin"D、重启Redis以后，发现新密码已经失效，Redis重新使用配置文件中的密码12345678[root@iZrj98p4hhys0y9fdxmcy4Z yanmin]# redis-cli -h 127.0.0.1 -p 6379 -a yanminredis 127.0.0.1:6379&gt; get name(error) ERR operation not permittedredis 127.0.0.1:6379&gt;[root@iZrj98p4hhys0y9fdxmcy4Z yanmin]# redis-cli -h 127.0.0.1 -p 6379 -a 123456redis 127.0.0.1:6379&gt; get name"yanmin"redis 127.0.0.1:6379&gt;转自：http://www.yanmin99.com]]></content>
+      <categories>
+        <category>redis</category>
+      </categories>
+      <tags>
+        <tag>redis</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Linux命令]]></title>
     <url>%2Flinchao1002.github.io%2F2017%2F03%2F20%2FLinux%E5%91%BD%E4%BB%A4%2F</url>
     <content type="text"><![CDATA[Linux命令Linux命令查询：http://man.linuxde.net/Linux命令详解]]></content>
@@ -226,6 +263,17 @@
       </categories>
       <tags>
         <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Linux（centos）源码redis安装]]></title>
+    <url>%2Flinchao1002.github.io%2F2017%2F03%2F05%2FLinux%EF%BC%88centos%EF%BC%89%20%E6%BA%90%E7%A0%81redis%E5%AE%89%E8%A3%85%2F</url>
+    <content type="text"><![CDATA[一、Reids介绍Redis官网REmote DIctionary Server(Redis) 是一个由Salvatore Sanfilippo写的key-value存储系统。二、Reids准备检查安装依赖程序123yum install gcc-c++yum install -y tclyum install wget三、安装文件下载1wget http://download.redis.io/releases/redis-2.8.13.tar.gz四、解压到指定目录123456//解压文件tar xzf redis-4.0.1.tar.gz//把文件移动到指定目录mv redis-4.0.1 /usr/local/redis//进入到指定目录cd /usr/local/redis五、编译、安装12makemake install六、设置配置文件路径12mkdir -p /etc/rediscp redis.conf/etc/redismkdir -p: -p表示递归创建文件夹七、设置配置文件,daemonize介绍123vi /etc/redis/redis.conf//把no修改为yesdaemonize yes （no--&gt;yes）八、Redis启动1redis-server /etc/redis/redis.conf &amp;&amp; 代表后台启动。九、查看是否启动1、查看进程名12[root@node404v /usr/local/redis]# ps aux|grep redisroot 15720 0.0 0.0 143904 2244 ? Ssl 15:10 0:00 redis-server 127.0.0.1:63792、查看端口是否监听12[root@node404v /usr/local/redis]# netstat -ntlp | grep 3306tcp 0 0 0.0.0.0:3306 0.0.0.0:* LISTEN 32246/mysqld十、使用客户端通过redis-cli启动客户端redis实例123456[root@node404v /usr/local/redis]# redis-cli127.0.0.1:6379&gt; set age 10OK127.0.0.1:6379&gt; get age"10"127.0.0.1:6379&gt;通过ctr+c 或者 exit退出。]]></content>
+      <categories>
+        <category>redis</category>
+      </categories>
+      <tags>
+        <tag>redis</tag>
       </tags>
   </entry>
   <entry>
@@ -266,6 +314,11 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[tags]]></title>
+    <url>%2Flinchao1002.github.io%2Ftags%2Findex.html</url>
+    <content type="text"><![CDATA[]]></content>
+  </entry>
+  <entry>
     <title><![CDATA[categories]]></title>
     <url>%2Flinchao1002.github.io%2Fcategories%2Findex.html</url>
     <content type="text"><![CDATA[]]></content>
@@ -274,10 +327,5 @@
     <title><![CDATA[About]]></title>
     <url>%2Flinchao1002.github.io%2Fabout%2Findex.html</url>
     <content type="text"><![CDATA[简介：星座：天秤座/Boy邮箱: linchao1002@qq.com歡迎收藏本站，下面留言會盡可能答復 (右下角可以实时联系哦，方便尽快回复你)]]></content>
-  </entry>
-  <entry>
-    <title><![CDATA[tags]]></title>
-    <url>%2Flinchao1002.github.io%2Ftags%2Findex.html</url>
-    <content type="text"><![CDATA[]]></content>
   </entry>
 </search>
